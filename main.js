@@ -39,21 +39,56 @@ const greenMaj = [maj.SOU2,maj.SOU3,maj.SOU4,maj.SOU6,maj.SOU8,maj.HAT];
 	isZimo: false, //是否自摸 
 	isLast: false, //是否是河底/海底
 	isQiangGang: false, //是否是抢杠
+	isTianHe: false, //是否是天和
+	isDiHe: false, //是否是地和
 }
-* 返回值：
+* 返回值：{
+	fan: 5, //番数
+	fu: 20, //符数
+	yakuList:[
+		{
+			yaku: "断幺九",
+			fan: 1
+		}
+	]
+}
 */
 function calcYaku(handMajList,fuluMajList,config){
 	var hasYaku = [];
 	var s = maj.calc(handMajList);
 	var rongMaj = handMajList[handMajList.length-1];
-	var f = isQiDuiZi(handMajList,fuluMajList);
-	console.log(f);
+	var ret = {fan: 0,fu: 0,yakuList:[]};
+	if(s){ //面子手和牌牌型
+		;
+	}else if(isQiDuiZi(handMajList,fuluMajList)){ //七对子和牌牌型
+		;
+	}else if(isGuoShi(handMajList,fuluMajList)){ //国士无双和牌牌型
+		if(isGuoShiShiSanMian(handMajList,fuluMajList)){
+			ret.fan = 26;
+			ret.fu = 25;
+			ret.yakuList.push({
+				yaku: "国士无双十三面",
+				fan: 26
+			});
+			return ret;
+		}else{
+			ret.fan = 13;
+			ret.fu = 25;
+			ret.yakuList.push({
+				yaku: "国士无双",
+				fan: 13
+			});
+			return ret;
+		}
+	}
+
 	/*
 	for(var i in s){
 		console.log(s[i]);
 		var t = isQingLaoTou(s[i],fuluMajList);
 		console.log(t);
 	}*/
+	return false;
 }
 /*
 * 判断是否门前清
@@ -836,8 +871,8 @@ function isQiDuiZi(handMajList,fuluMajList){
 	return ret;
 }
 
-calcYaku(
-	[maj.MAN1,maj.MAN1,maj.MAN9,maj.MAN9,maj.PIN9,maj.PIN9,maj.SOU9,maj.SOU9,maj.NAN,maj.NAN,maj.HAT,maj.HAT,maj.HAT,maj.HAT],[],{
+var res = calcYaku(
+	[maj.MAN1,maj.MAN9,maj.PIN1,maj.PIN9,maj.SOU1,maj.SOU9,maj.TON,maj.NAN,maj.SHA,maj.PEI,maj.HAK,maj.HAT,maj.HAT,maj.CHU],[],{
 		isDoubleLiZhi: false, //是否两立直
 		isLiZhi: false, //是否立直
 		isYiFa: false, //是否一发
@@ -851,3 +886,4 @@ calcYaku(
 		isDiHe: false, //是否是地和
 	}
 );
+console.log(res);
