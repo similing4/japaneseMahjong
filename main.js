@@ -3,6 +3,8 @@ const yaojiu = [maj.MAN1,maj.MAN9,maj.PIN1,maj.PIN9,maj.SOU1,maj.SOU9,maj.TON,ma
 const ziMaj = [maj.TON,maj.NAN,maj.SHA,maj.PEI,maj.HAK,maj.HAT,maj.CHU];
 const laotouMaj = [maj.MAN1,maj.MAN9,maj.PIN1,maj.PIN9,maj.SOU1,maj.SOU9];
 const sanYuanMaj = [maj.HAK,maj.HAT,maj.CHU];
+const siXiMaj = [maj.TON,maj.NAN,maj.SHA,maj.PEI];
+const greenMaj = [maj.SOU2,maj.SOU3,maj.SOU4,maj.SOU6,maj.SOU8,maj.HAT];
 /*
 * 计算役种
 * 参数：
@@ -44,13 +46,14 @@ function calcYaku(handMajList,fuluMajList,config){
 	var hasYaku = [];
 	var s = maj.calc(handMajList);
 	var rongMaj = handMajList[handMajList.length-1];
-	var f = isHunYiSe(handMajList,fuluMajList);
+	var f = isQiDuiZi(handMajList,fuluMajList);
 	console.log(f);
+	/*
 	for(var i in s){
-		var t = isErBeiKou(s[i],fuluMajList);
+		console.log(s[i]);
+		var t = isQingLaoTou(s[i],fuluMajList);
 		console.log(t);
-	}
-
+	}*/
 }
 /*
 * 判断是否门前清
@@ -423,16 +426,22 @@ function isDoubleLiZhi(config){
 /*
 * 获取当前和牌是否是三暗刻
 * 参数：
+* rongMaj：荣和或者自摸的牌
 * mianzi：面子，maj.calc的单个牌型返回值
 * fuluMajList: 副露牌，详见calcYaku
+* config: 配置，详见calcYaku
 * 返回值：符合三暗刻返回true，否则返回false
 */
-function isSanAnKe(mianzi,fuluMajList){
+function isSanAnKe(rongMaj,mianzi,fuluMajList,config){
 	var keziList = []; //取所有符合条件的刻子
 	keziList = keziList.concat(mianzi.kezi);
 	for(var i in fuluMajList)
 		if(fuluMajList[i].type=="angang")
 			keziList = keziList.concat(fuluMajList[i].maj); //暗杠也是暗刻
+	if(!config.isZimo){ //非自摸要考虑是不是暗刻
+		if(keziList.indexOf(rongMaj)!=-1)
+			keziList.pop(); //不是自摸的去掉这个暗刻
+	}
 	return keziList.length == 3;
 }
 /*
@@ -549,8 +558,286 @@ function isErBeiKou(mianzi,fuluMajList){
 }
 
 
+
+//下列役满可以复合，且会清除所有非役满役。
+
+/*
+* 获取当前和牌是否是四暗刻
+* 参数：
+* rongMaj：荣和或者自摸的牌
+* mianzi：面子，maj.calc的单个牌型返回值
+* fuluMajList: 副露牌，详见calcYaku
+* config: 配置，详见calcYaku
+* 返回值：符合四暗刻返回true，否则返回false
+*/
+function isSiAnKe(rongMaj,mianzi,fuluMajList,config){
+	var keziList = []; //取所有符合条件的刻子
+	keziList = keziList.concat(mianzi.kezi);
+	for(var i in fuluMajList)
+		if(fuluMajList[i].type=="angang")
+			keziList = keziList.concat(fuluMajList[i].maj); //暗杠也是暗刻
+	if(!config.isZimo){ //非自摸要考虑是不是暗刻
+		if(keziList.indexOf(rongMaj)!=-1)
+			keziList.pop(); //不是自摸的去掉这个暗刻
+	}
+	return keziList.length == 4;
+}
+/*
+* 获取当前和牌是否是四暗刻单骑
+* 参数：
+* rongMaj：荣和或者自摸的牌
+* mianzi：面子，maj.calc的单个牌型返回值
+* fuluMajList: 副露牌，详见calcYaku
+* config: 配置，详见calcYaku
+* 返回值：符合四暗刻单骑返回true，否则返回false
+*/
+function isSiAnKeDanQi(rongMaj,mianzi,fuluMajList,config){
+	return rongMaj == mianzi.header && isSiAnKe(rongMaj,mianzi,fuluMajList,config); //和牌是雀头就行了
+}
+
+/*
+* 获取当前和牌是否是大三元
+* 参数：
+* mianzi：面子，maj.calc的单个牌型返回值
+* fuluMajList: 副露牌，详见calcYaku
+* 返回值：符合大三元返回true，否则返回false
+*/
+function isDaSanYuan(mianzi,fuluMajList){
+	var keziList = []; //取所有刻子
+	keziList = keziList.concat(mianzi.kezi);
+	for(var i in fuluMajList){
+		if(fuluMajList[i].type!="shunzi"){
+			keziList = keziList.concat(fuluMajList[i].maj);
+		}
+	}
+	var sanyuanList = [];
+	for(var i in keziList)
+		if(sanYuanMaj.indexOf(keziList[i])!=-1) //三元牌的刻子
+			sanyuanList.push(keziList[i]);
+	return sanyuanList.length == 3; //三元牌的刻子为3个
+}
+/*
+* 获取当前和牌是否是小四喜
+* 参数：
+* mianzi：面子，maj.calc的单个牌型返回值
+* fuluMajList: 副露牌，详见calcYaku
+* 返回值：符合大三元返回true，否则返回false
+*/
+function isXiaoSiXi(mianzi,fuluMajList){
+	if(siXiMaj.indexOf(mianzi.header)==-1)
+		return false;//雀头必须是四喜牌
+	var keziList = []; //取所有刻子
+	keziList = keziList.concat(mianzi.kezi);
+	for(var i in fuluMajList){
+		if(fuluMajList[i].type!="shunzi"){
+			keziList = keziList.concat(fuluMajList[i].maj);
+		}
+	}
+	var siXiList = [];
+	for(var i in keziList)
+		if(siXiMaj.indexOf(keziList[i])!=-1) //四喜牌的刻子
+			siXiList.push(keziList[i]);
+	return siXiList.length == 3; //四喜牌的刻子为3个
+}
+/*
+* 获取当前和牌是否是大四喜
+* 参数：
+* mianzi：面子，maj.calc的单个牌型返回值
+* fuluMajList: 副露牌，详见calcYaku
+* 返回值：符合大三元返回true，否则返回false
+*/
+function isDaSiXi(mianzi,fuluMajList){
+	var keziList = []; //取所有刻子
+	keziList = keziList.concat(mianzi.kezi);
+	for(var i in fuluMajList){
+		if(fuluMajList[i].type!="shunzi"){
+			keziList = keziList.concat(fuluMajList[i].maj);
+		}
+	}
+	var siXiList = [];
+	for(var i in keziList)
+		if(siXiMaj.indexOf(keziList[i])!=-1) //四喜牌的刻子
+			siXiList.push(keziList[i]);
+	return siXiList.length == 4; //四喜牌的刻子为3个
+}
+
+/*
+* 获取当前和牌是否是字一色
+* 参数：
+* handMajList：手牌，详见calcYaku
+* fuluMajList: 副露牌，详见calcYaku
+* 返回值：符合字一色返回true，否则返回false
+*/
+function isZiYiSe(handMajList,fuluMajList){
+	var hands = [];
+	hands = hands.concat(handMajList); //所有牌
+	for(var i in fuluMajList)
+		hands = hands.concat(fuluMajList[i].maj);
+	for(var i in hands)
+		if(ziMaj.indexOf(hands[i])==-1)
+			return false; //数牌不是字一色
+	return true;
+}
+/*
+* 获取当前和牌是否是绿一色
+* 参数：
+* handMajList：手牌，详见calcYaku
+* fuluMajList: 副露牌，详见calcYaku
+* 返回值：符合绿一色返回true，否则返回false
+*/
+function isLvYiSe(handMajList,fuluMajList){
+	var hands = [];
+	hands = hands.concat(handMajList); //所有牌
+	for(var i in fuluMajList)
+		hands = hands.concat(fuluMajList[i].maj);
+	for(var i in hands)
+		if(greenMaj.indexOf(hands[i])==-1)
+			return false; //不是绿牌
+	return true;
+}
+
+/*
+* 获取当前和牌是否是清老头
+* 参数：
+* mianzi：面子，maj.calc的单个牌型返回值
+* fuluMajList: 副露牌，详见calcYaku
+* 返回值：符合清老头返回true，否则返回false
+*/
+function isQingLaoTou(mianzi,fuluMajList){
+	if(!isDuiDuiHe(mianzi,fuluMajList))
+		return false; //混老头一定对对和
+	return isChunQuanDaiYaoJiu(mianzi,fuluMajList);// 对对和 + 纯全带幺九 = 清老头
+}
+/*
+* 获取当前和牌是否是九莲宝灯
+* 参数：
+* handMajList：手牌，详见calcYaku
+* fuluMajList: 副露牌，详见calcYaku
+* 返回值：符合九莲宝灯返回true，否则返回false
+*/
+function isJiuLianBaoDeng(handMajList,fuluMajList){
+	if(fuluMajList.length > 0)
+		return false; //门前清限定，不允许有暗杠
+	var jiuLian = [
+		[maj.MAN1,maj.MAN1,maj.MAN1,maj.MAN2,maj.MAN3,maj.MAN4,maj.MAN5,maj.MAN6,maj.MAN7,maj.MAN8,maj.MAN9,maj.MAN9,maj.MAN9],
+		[maj.PIN1,maj.PIN1,maj.PIN1,maj.PIN2,maj.PIN3,maj.PIN4,maj.PIN5,maj.PIN6,maj.PIN7,maj.PIN8,maj.PIN9,maj.PIN9,maj.PIN9],
+		[maj.SOU1,maj.SOU1,maj.SOU1,maj.SOU2,maj.SOU3,maj.SOU4,maj.SOU5,maj.SOU6,maj.SOU7,maj.SOU8,maj.SOU9,maj.SOU9,maj.SOU9]];
+	var canWin = []; //列出所有可能
+	for(var t in jiuLian)
+		for(var i=0;i<9;i++){
+			var arr = jiuLian[t].slice();
+			arr.push(jiuLian[t][0]+i);
+			arr.sort()
+			canWin.push(arr.join("-"));
+		}
+	return canWin.indexOf(handMajList.slice().sort().join("-"))!=-1
+}
+/*
+* 获取当前和牌是否是纯正九莲宝灯
+* 参数：
+* handMajList：手牌，详见calcYaku
+* fuluMajList: 副露牌，详见calcYaku
+* 返回值：符合纯正九莲宝灯返回true，否则返回false
+*/
+function isChunZhengJiuLianBaoDeng(handMajList,fuluMajList){
+	if(fuluMajList.length > 0)
+		return false; //门前清限定，不允许有暗杠
+	var jiuLian = [
+		[maj.MAN1,maj.MAN1,maj.MAN1,maj.MAN2,maj.MAN3,maj.MAN4,maj.MAN5,maj.MAN6,maj.MAN7,maj.MAN8,maj.MAN9,maj.MAN9,maj.MAN9].sort().join("-"),
+		[maj.PIN1,maj.PIN1,maj.PIN1,maj.PIN2,maj.PIN3,maj.PIN4,maj.PIN5,maj.PIN6,maj.PIN7,maj.PIN8,maj.PIN9,maj.PIN9,maj.PIN9].sort().join("-"),
+		[maj.SOU1,maj.SOU1,maj.SOU1,maj.SOU2,maj.SOU3,maj.SOU4,maj.SOU5,maj.SOU6,maj.SOU7,maj.SOU8,maj.SOU9,maj.SOU9,maj.SOU9].sort().join("-")];
+	var hand = handMajList.slice();
+	hand.pop();
+	return jiuLian.indexOf(hand.sort().join("-"))!=-1
+}
+
+/*
+* 获取当前和牌是否是四杠子
+* 参数：
+* mianzi：面子，maj.calc的单个牌型返回值
+* fuluMajList: 副露牌，详见calcYaku
+* 返回值：符合四杠子返回true，否则返回false
+*/
+function isSanGangzi(mianzi,fuluMajList){
+	var gangziList = []; //取所有杠子
+	for(var i in fuluMajList)
+		if(fuluMajList[i].type=="angang"||fuluMajList[i].type=="gangzi")
+			gangziList = gangziList.concat(fuluMajList[i].maj); //暗杠也是暗刻
+	return gangziList.length == 4;
+}
+/*
+* 判断是否是天和
+* 参数：
+* config: 配置，详见calcYaku
+* 返回值：符合天和返回true，否则返回false
+*/
+function isTianHe(config){
+	return config.isTianHe;
+}
+/*
+* 判断是否是地和
+* 参数：
+* config: 配置，详见calcYaku
+* 返回值：符合地和返回true，否则返回false
+*/
+function isDiHe(config){
+	return config.isDiHe;
+}
+/*
+* 判断是否是国士无双
+* 参数：
+* handMajList：手牌，详见calcYaku
+* fuluMajList: 副露牌，详见calcYaku
+* 返回值：符合国士无双返回true，否则返回false
+*/
+function isGuoShi(handMajList,fuluMajList){
+	if(fuluMajList.length>0)
+		return false; //国士不可能副露
+	var canWin = []; //列出所有可能
+	for(var i in yaojiu){
+		var arr = yaojiu.slice();
+		arr.push(yaojiu[i]);
+		arr.sort()
+		canWin.push(arr.join("-"));
+	}
+	return canWin.indexOf(handMajList.slice().sort().join("-"))!=-1;
+}
+/*
+* 判断是否是国士无双十三面
+* 参数：
+* handMajList：手牌，详见calcYaku
+* fuluMajList: 副露牌，详见calcYaku
+* 返回值：符合国士无双十三面返回true，否则返回false
+*/
+function isGuoShiShiSanMian(handMajList,fuluMajList){
+	if(fuluMajList.length>0)
+		return false; //国士不可能副露
+	var m = yaojiu.slice().sort().join("-");
+	var hand = handMajList.slice();
+	hand.pop();
+	return hand.slice().sort().join("-") == m;
+}
+/*
+* 判断是否是七对子
+* 参数：
+* handMajList：手牌，详见calcYaku
+* fuluMajList: 副露牌，详见calcYaku
+* 返回值：符合七对子返回true，否则返回false
+*/
+function isQiDuiZi(handMajList,fuluMajList){
+	if(fuluMajList.length>0)
+		return false; //七对子不可能副露
+	var map = handMajList.reduce((m, x) => m.set(x, (m.get(x) || 0) + 1), new Map()) //对手牌计数
+	ret = true;
+	map.forEach(function(count,key){
+		if(count!=2)
+			ret = false; // 手牌出现次数不等于2即非七对子
+	})
+	return ret;
+}
+
 calcYaku(
-	[maj.MAN1, maj.MAN1, maj.MAN1, maj.MAN1, maj.MAN2, maj.MAN2, maj.MAN2, maj.MAN2, maj.MAN3, maj.MAN3, maj.MAN3, maj.MAN3, maj.MAN4, maj.MAN4],[],{
+	[maj.MAN1,maj.MAN1,maj.MAN9,maj.MAN9,maj.PIN9,maj.PIN9,maj.SOU9,maj.SOU9,maj.NAN,maj.NAN,maj.HAT,maj.HAT,maj.HAT,maj.HAT],[],{
 		isDoubleLiZhi: false, //是否两立直
 		isLiZhi: false, //是否立直
 		isYiFa: false, //是否一发
@@ -560,38 +847,7 @@ calcYaku(
 		isZimo: false, //是否自摸 
 		isLast: false, //是否是河底/海底
 		isQiangGang: false, //是否是抢杠
+		isTianHe: false, //是否是天和
+		isDiHe: false, //是否是地和
 	}
 );
-
-
-
-
-
-
-/*
-
-已完工：
-断幺九、平和、立直、一发、门前清自摸、一杯口、役牌、海底捞月、河底捞鱼、抢杠、岭上开花
-一气通贯、三色同顺、三色同刻、混全带幺九、纯全带幺九、对对和、双立直、三暗刻、三杠子、混老头、小三元、混一色、清一色、二杯口
-
-未完工
-七对子
-
-国士无双
-四暗刻
-大三元
-小四喜
-字一色
-绿一色
-清老头
-九莲宝灯
-四杠子
-天和
-地和
-
-
-国士无双十三面
-四暗刻单骑
-大四喜
-纯正九莲宝灯
-*/
