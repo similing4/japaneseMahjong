@@ -36,6 +36,18 @@ const PEI = 30;
 const HAK = 31;
 const HAT = 32;
 const CHU = 33;
+/*
+* 计算手牌对应的所有面子可能
+* 参数：
+* hai：手牌数组
+* 返回值：非和牌牌型返回false，否则返回面子、雀头对应的数组，雀头对应header，刻子对应kezi，顺子对应shunzi，顺子刻子均只记录第一张牌，如234万只记录2万。
+* 示例：（测试值为22334455667788万）
+    [
+      { header: 1, kezi: [], shunzi: [ 2, 2, 5, 5 ] },
+      { header: 4, kezi: [], shunzi: [ 1, 1, 5, 5 ] },
+      { header: 7, kezi: [], shunzi: [ 1, 1, 4, 4 ] }
+    ]
+*/
 function calc(hai){
     var n_zero = [];
     for(var i=0;i<34;i++)
