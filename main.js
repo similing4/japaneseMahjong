@@ -41,10 +41,14 @@ const greenMaj = [maj.SOU2,maj.SOU3,maj.SOU4,maj.SOU6,maj.SOU8,maj.HAT];
 	isQiangGang: false, //是否是抢杠
 	isTianHe: false, //是否是天和
 	isDiHe: false, //是否是地和
+	dora: [MAN1], //宝牌指示牌
+	liDora: [MAN1], //里宝牌指示牌
+	redDora: 0 //赤宝牌个数
 }
 * 返回值：{
 	fan: 5, //番数
 	fu: 20, //符数
+	point: 8000, //点数
 	yakuList:[
 		{
 			yaku: "断幺九",
@@ -54,41 +58,641 @@ const greenMaj = [maj.SOU2,maj.SOU3,maj.SOU4,maj.SOU6,maj.SOU8,maj.HAT];
 }
 */
 function calcYaku(handMajList,fuluMajList,config){
-	var hasYaku = [];
-	var s = maj.calc(handMajList);
-	var rongMaj = handMajList[handMajList.length-1];
+	var mianzi = maj.calc(handMajList);
 	var ret = {fan: 0,fu: 0,yakuList:[]};
-	if(s){ //面子手和牌牌型
-		;
-	}else if(isQiDuiZi(handMajList,fuluMajList)){ //七对子和牌牌型
-		;
+	if(isQiDuiZi(handMajList,fuluMajList)&&(!mianzi||mianzi.length==0||(mianzi[0].shunzi.length==0&&mianzi[0].kezi.length==0))){ //七对子和牌牌型
+		ret.fu = 25; //七对子25符
+		if(isTianHe(config)){
+			ret.fan = 13;
+			ret.yakuList.push({
+				yaku: "天和",
+				fan: 13
+			});
+		}else if(isDiHe(config)){
+			ret.fan = 13;
+			ret.yakuList.push({
+				yaku: "地和",
+				fan: 13
+			});
+		}else{
+			ret.yakuList.push({
+				yaku: "七对子",
+				fan: 2
+			});
+			ret.fan += 2;
+			if(isLiZhi(config)){
+				if(isDoubleLiZhi(config)){
+					ret.yakuList.push({
+						yaku: "两立直",
+						fan: 2
+					});
+					ret.fan += 2;
+				}else{
+					ret.yakuList.push({
+						yaku: "立直",
+						fan: 1
+					});
+					ret.fan += 1;
+				}
+			}
+			if(isYiFa(config)){
+				ret.yakuList.push({
+					yaku: "一发",
+					fan: 1
+				});
+				ret.fan += 1;
+			}
+			if(isZimo(fuluMajList,config)){
+				ret.yakuList.push({
+					yaku: "门前清自摸",
+					fan: 1
+				});
+				ret.fan += 1;
+			}
+			if(isLingShang(config)){
+				ret.yakuList.push({
+					yaku: "岭上开花",
+					fan: 1
+				});
+				ret.fan += 1;
+			}
+			if(isHaidi(config)){
+				ret.yakuList.push({
+					yaku: "海底捞月",
+					fan: 1
+				});
+				ret.fan += 1;
+			}
+			if(isHedi(config)){
+				ret.yakuList.push({
+					yaku: "河底捞鱼",
+					fan: 1
+				});
+				ret.fan += 1;
+			}
+			if(isDuanYao(handMajList,fuluMajList)){
+				ret.yakuList.push({
+					yaku: "断幺九",
+					fan: 1
+				});
+				ret.fan += 1;
+			}
+			if(isQingYiSe(handMajList,fuluMajList)){
+				ret.yakuList.push({
+					yaku: "清一色",
+					fan: 6
+				});
+				ret.fan += 6;
+			}else if(isHunYiSe(handMajList,fuluMajList)){
+				ret.yakuList.push({
+					yaku: "混一色",
+					fan: 3
+				});
+				ret.fan += 3;
+			}
+			if(isHunLaoTou(handMajList,mianzi,fuluMajList)){
+				ret.yakuList.push({
+					yaku: "混老头",
+					fan: 2
+				});
+				ret.fan += 2;
+			}
+		}
+	}else if(mianzi){ //面子手和牌牌型
+		var retList = [];
+		for(var i in mianzi)
+			retList.push(calcMianzi(mianzi[i],handMajList,fuluMajList,config));
+		retList.sort(function(a,b){
+			if(b.fan==a.fan)
+				return b.fu-a.fu;
+			return b.fan-a.fan;
+		});
+		ret = retList[0];
 	}else if(isGuoShi(handMajList,fuluMajList)){ //国士无双和牌牌型
+		ret.fu = 25; //国士无双25符
 		if(isGuoShiShiSanMian(handMajList,fuluMajList)){
 			ret.fan = 26;
-			ret.fu = 25;
 			ret.yakuList.push({
 				yaku: "国士无双十三面",
 				fan: 26
 			});
-			return ret;
 		}else{
 			ret.fan = 13;
-			ret.fu = 25;
 			ret.yakuList.push({
 				yaku: "国士无双",
 				fan: 13
 			});
-			return ret;
+		}
+		if(isTianHe(config)){
+			ret.yakuList.push({
+				yaku: "天和",
+				fan: 13
+			});
+			ret.fan += 13;
+		}
+		if(isDiHe(config)){
+			ret.yakuList.push({
+				yaku: "地和",
+				fan: 13
+			});
+			ret.fan += 13;
 		}
 	}
+	if(ret.fan == 0)
+		return false;
+	var majAllList = [];
+	majAllList = majAllList.concat(handMajList);
+	for(var i in fuluMajList){
+		switch(fuluMajList[i].type){
+		case "shunzi":
+			majAllList = majAllList.concat(fuluMajList[i].maj);
+			break;
+		case "kezi":
+			majAllList = majAllList.concat(fuluMajList[i].maj);
+			majAllList = majAllList.concat(fuluMajList[i].maj);
+			majAllList = majAllList.concat(fuluMajList[i].maj);
+		case "gangzi":
+		case "angang":
+			majAllList = majAllList.concat(fuluMajList[i].maj);
+			break;
+		}
+	}
+	var doraCount = 0;
+	for(var i in config.dora){
+		var dora = getDoraFromDoraShow(config.dora[i]);
+		for(var j in majAllList)
+			if(majAllList[j] == dora)
+				doraCount++;
+	}
+	if(doraCount > 0){
+		ret.yakuList.push({
+			yaku: "宝牌",
+			fan: doraCount
+		});
+		ret.fan += doraCount;
+	}
+	doraCount = 0;
+	for(var i in config.liDora){
+		var dora = getDoraFromDoraShow(config.liDora[i]);
+		for(var j in majAllList)
+			if(majAllList[j] == dora)
+				doraCount++;
+	}
+	if(doraCount > 0){
+		ret.yakuList.push({
+			yaku: "里宝牌",
+			fan: doraCount
+		});
+		ret.fan += doraCount;
+	}
 
-	/*
-	for(var i in s){
-		console.log(s[i]);
-		var t = isQingLaoTou(s[i],fuluMajList);
-		console.log(t);
-	}*/
+	if(config.redDora > 0){
+		ret.yakuList.push({
+			yaku: "赤宝牌",
+			fan: config.redDora
+		});
+		ret.fan += config.redDora;
+	}
+
+	if(ret.fu == 0){ //计算符数
+		var fu = 20; //底符
+		for(var i in ret.mianzi.kezi)
+			fu += 8; //暗刻8符
+		for(var i in fuluMajList){
+			if(fuluMajList[i].type=="kezi")
+				fu += 4; //明刻4符
+			else if(fuluMajList[i].type=="gangzi")
+				fu += 16; //明杠16符
+			else if(fuluMajList[i].type=="angang")
+				fu += 32; //暗杠32符
+		}
+		var header = ret.mianzi.header; //雀头役牌2符
+		if(header == config.ziFeng)
+			fu += 2;
+		if(header == config.changFeng)
+			fu += 2;
+		if(header == maj.HAK)
+			fu += 2;
+		if(header == maj.HAT)
+			fu += 2;
+		if(header == maj.CHU)
+			fu += 2;
+
+		var rongMaj = handMajList[handMajList.length-1];
+		if(rongMaj == ret.mianzi.header)
+			fu += 2; //单骑
+		else{
+			var isBK = false; //是边张或坎张
+			for(var i in ret.mianzi.shunzi){ //遍历手牌所有顺子
+				if(ret.mianzi.shunzi[i] + 1 == rongMaj && yaojiu.indexOf(rongMaj) == -1) //不是幺九，上一张牌是顺子的第一张，是坎张
+					isBK = true;
+				if([maj.MAN1,maj.PIN1,maj.SOU1].indexOf(ret.mianzi.shunzi[i])!=-1 && ret.mianzi.shunzi[i] + 2 == rongMaj) //顺子为123，上两张牌是顺子的第一张，是边张
+					isBK = true;
+				if([maj.PIN7,maj.MAN7,maj.SOU7].indexOf(ret.mianzi.shunzi[i])!=-1 && ret.mianzi.shunzi[i] == rongMaj) //顺子为789，和牌是顺子的第一张，是边张
+					isBK = true;
+			}
+			if(isBK)
+				fu += 2; //边张或坎张2符
+		}
+
+		if(!config.isZimo&&isMenQianQing(fuluMajList))
+			fu += 10; //门前清荣和10符
+		if(config.isZimo)
+			fu += 2; //门前清自摸2符
+		ret.fu = Math.ceil(fu/10)*10;
+	}
+	ret.point = calcPoint(ret.fan,ret.fu,config.ziFeng == maj.TON);
+	return ret;
+}
+/*
+* 计算指定牌型的面子手役种
+* 参数：
+* mianzi：指定的牌型，也就是maj.calc的结果的单一项
+* handMajList：详见calcYaku方法
+* fuluMajList: 详见calcYaku方法
+* config：详见calcYaku方法
+* 返回值：{
+	fan: 5, //番数
+	fu: 20, //符数
+	yakuList:[
+		{
+			yaku: "断幺九",
+			fan: 1
+		}
+	],
+	mianzi: {
+		header: 1,
+		kezi: [],
+		shunzi: [ 2, 2, 5, 5 ]
+	}
+}
+*/
+function calcMianzi(mianzi,handMajList,fuluMajList,config){
+	var menQianQing = isMenQianQing(fuluMajList);
+	var rongMaj = handMajList[handMajList.length-1];
+	var isYakuMan = false; //是否役满
+	var ret = {fan: 0,fu: 0,yakuList:[],mianzi:mianzi};
+	if(isSiAnKe(rongMaj,mianzi,fuluMajList,config)){
+		isYakuMan = true;
+		if(isTianHe(config)||isSiAnKeDanQi(rongMaj,mianzi,fuluMajList,config)){ //天和四暗刻计四暗刻单骑
+			ret.yakuList.push({
+				yaku: "四暗刻单骑",
+				fan: 26
+			});
+			ret.fan += 26;
+		}else{
+			ret.yakuList.push({
+				yaku: "四暗刻",
+				fan: 13
+			});
+			ret.fan += 13;
+		}
+	}
+	if(isDaSanYuan(mianzi,fuluMajList)){
+		isYakuMan = true;
+		ret.yakuList.push({
+			yaku: "大三元",
+			fan: 13
+		});
+		ret.fan += 13;
+	}
+	if(isXiaoSiXi(mianzi,fuluMajList)){
+		isYakuMan = true;
+		ret.yakuList.push({
+			yaku: "小四喜",
+			fan: 13
+		});
+		ret.fan += 13;
+	}
+	if(isDaSiXi(mianzi,fuluMajList)){
+		isYakuMan = true;
+		ret.yakuList.push({
+			yaku: "大四喜",
+			fan: 26
+		});
+		ret.fan += 26;
+	}
+	if(isZiYiSe(handMajList,fuluMajList)){
+		isYakuMan = true;
+		ret.yakuList.push({
+			yaku: "字一色",
+			fan: 13
+		});
+		ret.fan += 13;
+	}
+	if(isLvYiSe(handMajList,fuluMajList)){
+		isYakuMan = true;
+		ret.yakuList.push({
+			yaku: "绿一色",
+			fan: 13
+		});
+		ret.fan += 13;
+	}
+	if(isQingLaoTou(mianzi,fuluMajList)){
+		isYakuMan = true;
+		ret.yakuList.push({
+			yaku: "清老头",
+			fan: 13
+		});
+		ret.fan += 13;
+	}
+	if(isJiuLianBaoDeng(handMajList,fuluMajList)){
+		isYakuMan = true;
+		if(isTianHe(config)||isChunZhengJiuLianBaoDeng(handMajList,fuluMajList)){ //天和九莲宝灯计纯正九莲宝灯
+			ret.yakuList.push({
+				yaku: "纯正九莲宝灯",
+				fan: 26
+			});
+			ret.fan += 26;
+		}else{
+			ret.yakuList.push({
+				yaku: "九莲宝灯",
+				fan: 13
+			});
+			ret.fan += 13;
+		}
+	}
+	if(isSanGangzi(mianzi,fuluMajList)){
+		isYakuMan = true;
+		ret.yakuList.push({
+			yaku: "四杠子",
+			fan: 13
+		});
+		ret.fan += 13;
+	}
+	if(isTianHe(config)){
+		ret.yakuList.push({
+			yaku: "天和",
+			fan: 13
+		});
+		ret.fan += 13;
+	}
+	if(isDiHe(config)){
+		ret.yakuList.push({
+			yaku: "地和",
+			fan: 13
+		});
+		ret.fan += 13;
+	}
+	if(isYakuMan)
+		return ret;
+
+
+	if(isLiZhi(config)){
+		if(isDoubleLiZhi(config)){
+			ret.yakuList.push({
+				yaku: "两立直",
+				fan: 2
+			});
+			ret.fan += 2;
+		}else{
+			ret.yakuList.push({
+				yaku: "立直",
+				fan: 1
+			});
+			ret.fan += 1;
+		}
+		if(isYiFa(config)){
+			ret.yakuList.push({
+				yaku: "一发",
+				fan: 1
+			});
+			ret.fan += 1;
+		}
+	}
+	if(isZimo(fuluMajList,config)){
+		ret.yakuList.push({
+			yaku: "门前清自摸",
+			fan: 1
+		});
+		ret.fan += 1;
+	}
+	if(isPinghe(rongMaj,mianzi,fuluMajList,config)){
+		ret.fu = 30;
+		if(config.isZimo)
+			ret.fu = 20;
+		ret.yakuList.push({
+			yaku: "平和",
+			fan: 1
+		});
+		ret.fan += 1;
+	}
+	if(isDuanYao(handMajList,fuluMajList)){
+		ret.yakuList.push({
+			yaku: "断幺九",
+			fan: 1
+		});
+		ret.fan += 1;
+	}
+	var yakuhaiList = calcYakuHai(mianzi,fuluMajList,config);
+	for(var i in yakuhaiList){
+		if(yakuhaiList[i]==config.ziFeng){
+			ret.yakuList.push({
+				yaku: "门风牌-"+getFengName(yakuhaiList[i]),
+				fan: 1
+			});
+			ret.fan += 1;
+		}
+		if(yakuhaiList[i]==config.changFeng){
+			ret.yakuList.push({
+				yaku: "场风牌-"+getFengName(yakuhaiList[i]),
+				fan: 1
+			});
+			ret.fan += 1;
+		}
+		if(sanYuanMaj.indexOf(yakuhaiList[i])!=-1){
+			ret.yakuList.push({
+				yaku: getFengName(yakuhaiList[i]), //三元牌
+				fan: 1
+			});
+			ret.fan += 1;
+		}	
+	}
+	if(isHaidi(config)){
+		ret.yakuList.push({
+			yaku: "海底捞月",
+			fan: 1
+		});
+		ret.fan += 1;
+	}
+	if(isHedi(config)){
+		ret.yakuList.push({
+			yaku: "河底捞鱼",
+			fan: 1
+		});
+		ret.fan += 1;
+	}
+	if(isQiangGang(config)){
+		ret.yakuList.push({
+			yaku: "抢杠",
+			fan: 1
+		});
+		ret.fan += 1;
+	}
+	if(isLingShang(config)){
+		ret.yakuList.push({
+			yaku: "岭上开花",
+			fan: 1
+		});
+		ret.fan += 1;
+	}
+	if(isDuiDuiHe(mianzi,fuluMajList)){
+		ret.yakuList.push({
+			yaku: "对对和",
+			fan: 2
+		});
+		ret.fan += 2;
+	}
+	if(isSanSeTongKe(mianzi,fuluMajList)){
+		ret.yakuList.push({
+			yaku: "三色同刻",
+			fan: 2
+		});
+		ret.fan += 2;
+	}
+	if(isSanAnKe(rongMaj,mianzi,fuluMajList,config)){
+		ret.yakuList.push({
+			yaku: "三暗刻",
+			fan: 2
+		});
+		ret.fan += 2;
+	}
+	if(isSanGangzi(mianzi,fuluMajList)){
+		ret.yakuList.push({
+			yaku: "三杠子",
+			fan: 2
+		});
+		ret.fan += 2;
+	}
+	if(isHunLaoTou(handMajList,mianzi,fuluMajList)){
+		ret.yakuList.push({
+			yaku: "混老头",
+			fan: 2
+		});
+		ret.fan += 2;
+	}
+	if(isXiaoSanYuan(mianzi,fuluMajList)){
+		ret.yakuList.push({
+			yaku: "小三元",
+			fan: 2
+		});
+		ret.fan += 2;
+	}
+	if(isYiBeiKou(mianzi,fuluMajList,config)){
+		if(!isErBeiKou(mianzi,fuluMajList)){
+			ret.yakuList.push({
+				yaku: "一杯口",
+				fan: 1
+			});
+			ret.fan += 1;
+		}else{
+			ret.yakuList.push({
+				yaku: "二杯口",
+				fan: 3
+			});
+			ret.fan += 3;
+		}
+	}
+	if(isYiQi(mianzi,fuluMajList)){
+		ret.yakuList.push({
+			yaku: "一气通贯",
+			fan: (isMenQianQing ? 2 : 1)
+		});
+		ret.fan += (isMenQianQing ? 2 : 1);
+	}
+	if(isSanSeTongShun(mianzi,fuluMajList)){
+		ret.yakuList.push({
+			yaku: "三色同顺",
+			fan: (isMenQianQing ? 2 : 1)
+		});
+		ret.fan += (isMenQianQing ? 2 : 1);
+	}
+	if(isHunQuanDaiYaoJiu(mianzi,fuluMajList)){
+		ret.yakuList.push({
+			yaku: "混全带幺九",
+			fan: (isMenQianQing ? 2 : 1)
+		});
+		ret.fan += (isMenQianQing ? 2 : 1);
+	}
+	if(isChunQuanDaiYaoJiu(mianzi,fuluMajList)){
+		ret.yakuList.push({
+			yaku: "纯全带幺九",
+			fan: (isMenQianQing ? 3 : 2)
+		});
+		ret.fan += (isMenQianQing ? 3 : 2);
+	}
+	if(isQingYiSe(handMajList,fuluMajList)){
+		ret.yakuList.push({
+			yaku: "清一色",
+			fan: (isMenQianQing ? 6 : 5)
+		});
+		ret.fan += (isMenQianQing ? 6 : 5);
+	}else if(isHunYiSe(handMajList,fuluMajList)){
+		ret.yakuList.push({
+			yaku: "混一色",
+			fan: (isMenQianQing ? 3 : 2)
+		});
+		ret.fan += (isMenQianQing ? 3 : 2);
+	}
+	return ret;
+}
+
+/*
+* 获取宝牌指示牌对应的宝牌
+* 参数：
+* maj：宝牌指示牌
+* 返回值：宝牌
+*/
+function getDoraFromDoraShow(maj){
+	if(yaojiu.indexOf(maj)==-1) //宝牌不是幺九牌
+		return maj + 1; //返回下一张牌
+	if([maj.MAN1,maj.SOU1,maj.PIN1].indexOf(maj)!=-1) //数牌1
+		return maj + 1; //返回下一张牌
+	if([maj.MAN9,maj.PIN9,maj.SOU9].indexOf(maj)!=-1) //数牌9
+		return maj - 8;
+	switch(maj){
+	case maj.TON:
+		return maj.NAN;
+	case maj.NAN:
+		return maj.SHA;
+	case maj.SHA:
+		return maj.PEI;
+	case maj.PEI:
+		return maj.TON;
+	case maj.HAK:
+		return maj.HAT;
+	case maj.HAT:
+		return maj.CHU;
+	case maj.CHU:
+		return maj.HAK;
+	}
 	return false;
+}
+
+/*
+* 获取字牌的中文名
+* 参数：
+* maj：字牌编号
+* 返回值：字牌中文名
+*/
+function getFengName(maj){
+	switch(maj){
+	case maj.TON:
+		return "东";
+	case maj.NAN:
+		return "南";
+	case maj.SHA:
+		return "西";
+	case maj.PEI:
+		return "北";
+	case maj.CHU:
+		return "中";
+	case maj.HAT:
+		return "发";
+	case maj.HAK:
+		return "白";
+	}
+	return "";
 }
 /*
 * 判断是否门前清
@@ -275,11 +879,11 @@ function isLingShang(config){
 	return config.isLingShang;
 }
 /*
-* 获取当前和牌是否是一气贯通
+* 获取当前和牌是否是一气通贯
 * 参数：
 * mianzi：面子，maj.calc的单个牌型返回值
 * fuluMajList: 副露牌，详见calcYaku
-* 返回值：符合一气贯通返回true，否则返回false
+* 返回值：符合一气通贯返回true，否则返回false
 */
 function isYiQi(mianzi,fuluMajList){
 	var shunziList = [];
@@ -425,14 +1029,22 @@ function isChunQuanDaiYaoJiu(mianzi,fuluMajList){
 /*
 * 获取当前和牌是否是混老头(计此役时不计纯全带幺九、混全带幺九)
 * 参数：
+* handMajList：手牌，详见calcYaku
 * mianzi：面子，maj.calc的单个牌型返回值
 * fuluMajList: 副露牌，详见calcYaku
 * 返回值：符合纯全带幺九返回true，否则返回false
 */
-function isHunLaoTou(mianzi,fuluMajList){
-	if(!isDuiDuiHe(mianzi,fuluMajList))
-		return false; //混老头一定对对和
-	return isHunQuanDaiYaoJiu(mianzi,fuluMajList);// 对对和 + 混全带幺九 = 混老头
+function isHunLaoTou(handMajList,mianzi,fuluMajList){
+	if(isQiDuiZi(handMajList,fuluMajList)){
+		for(var i in handMajList)
+			if(yaojiu.indexOf(handMajList[i])==-1)
+				return false; //不是幺九牌
+		return true;
+	}else{
+		if(!isDuiDuiHe(mianzi,fuluMajList))
+			return false; //混老头一定对对和
+		return isHunQuanDaiYaoJiu(mianzi,fuluMajList);// 对对和 + 混全带幺九 = 混老头
+	}
 }
 /*
 * 获取当前和牌是否是对对和
@@ -579,6 +1191,8 @@ function isQingYiSe(handMajList,fuluMajList){
 * 返回值：符合二杯口返回true，否则返回false
 */
 function isErBeiKou(mianzi,fuluMajList){
+	if(!mianzi)
+		return false;
 	if(!isMenQianQing(fuluMajList))
 		return false; //门前清限定
 	var map = mianzi.shunzi.reduce((m, x) => m.set(x, (m.get(x) || 0) + 1), new Map()) //对顺子头计数
@@ -870,20 +1484,55 @@ function isQiDuiZi(handMajList,fuluMajList){
 	})
 	return ret;
 }
+/*
+* 获取番数符数对应的点数
+* 参数：
+* fan：番数
+* fu：符数
+* isZhuang：是否是庄家
+* 返回值：和牌点数
+*/
+function calcPoint(fan,fu,isZhuang){
+	var fp = (isZhuang ? 6 : 4);
+	if(fan < 5){
+		var a = Math.ceil(fu * Math.pow(2,fan+2) * fp / 100) * 100;
+		if(a >= 2000)
+			return 2000 * fp;
+	}
+	switch(parseInt(fan)){
+	case 5:
+		return 2000 * fp;
+	case 6:
+	case 7:
+		return 3000 * fp;
+	case 8:
+	case 9:
+	case 10:
+		return 4000 * fp;
+	case 11:
+	case 12:
+		return 6000 * fp;
+	default:
+		return 8000 * fp;
+	}
+}
 
 var res = calcYaku(
-	[maj.MAN1,maj.MAN9,maj.PIN1,maj.PIN9,maj.SOU1,maj.SOU9,maj.TON,maj.NAN,maj.SHA,maj.PEI,maj.HAK,maj.HAT,maj.HAT,maj.CHU],[],{
-		isDoubleLiZhi: false, //是否两立直
+	[maj.MAN1,maj.MAN2,maj.MAN3,maj.PIN1,maj.PIN1,maj.PIN2,maj.PIN3,maj.PIN2,maj.PIN3,maj.SOU1,maj.SOU2,maj.SOU3,maj.SOU4,maj.SOU4],[],{
+		isDoubleLiZhi: false, //是否两立直 123m112233p12344s
 		isLiZhi: false, //是否立直
 		isYiFa: false, //是否一发
 		isLingShang: false, //是否领上
-		ziFeng: maj.TON, //自风
+		ziFeng: maj.NAN, //自风
 		changFeng: maj.TON, //场风
 		isZimo: false, //是否自摸 
 		isLast: false, //是否是河底/海底
 		isQiangGang: false, //是否是抢杠
 		isTianHe: false, //是否是天和
 		isDiHe: false, //是否是地和
+		dora: [maj.MAN1], //宝牌指示牌
+		liDora: [maj.MAN4], //里宝牌指示牌
+		redDora: 0 //赤宝牌个数
 	}
 );
 console.log(res);
