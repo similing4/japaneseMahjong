@@ -1,4 +1,5 @@
 const tbl = require('./tbl.js');
+const xiangtingWork = require('./work.min.js');
 const MAN = 0;
 const MAN1 = 0;
 const MAN2 = 1;
@@ -60,18 +61,18 @@ function calc(hai){
         }
         return n;
     }
-    const calc_key = function(n, pos) {
+    const calc_key = function(n, pos) { //计算得到表中的键 n是34种牌每个个数数组，pos是待返回的14张牌
         var p = -1;
         var x = 0;
-        var pos_p = 0; // pos的数组索引
-        var b = false; // 前一个是0以外
+        var pos_p = 0;
+        var b = false; // 是否有上一张牌
         // 数牌
-        for (var i = 0; i < 3; i++) {
-            for (var j = 0; j < 9; j++) {
-                if (n[i * 9 + j] == 0) {
-                    if (b) {
-                        b = false;
-                        x |= (0x1 << p);
+        for (var i = 0; i < 3; i++) { //遍历万子、筒子、索子
+            for (var j = 0; j < 9; j++) { //遍历牌的数字
+                if (n[i * 9 + j] == 0) { // 没有这个数牌
+                    if (b) { //有上一张牌时
+                        b = false; //切换上张牌存在开关
+                        x |= (0x1 << p); //此时p一定大于0
                         p++;
                     }
                 } else {
@@ -125,14 +126,10 @@ function calc(hai){
         }
         return x;
     }
-    const agari = function(key) {
-        return tbl[key];
-    }
 	var pos = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-	var ret = null;
     var n = analyse(hai);
     var key = calc_key(n, pos);
-    ret = agari(key);
+    var ret = tbl[key];
     if(!ret)
     	return false;
     var result = [];
@@ -144,8 +141,8 @@ function calc(hai){
     		shunzi:[]
     	};
     	item.header = (pos[(r>>6)&0xF]);
-        var num_kotsu = r&0x7;
-        var num_shuntsu = (r>>3)&0x7;
+        var num_kotsu = r&0x7; // 刻子
+        var num_shuntsu = (r>>3)&0x7; //顺子
         for (var i = 0; i < num_kotsu; i++)
             item.kezi.push(pos[(r>>(10+i*4))&0xF]);
         for (var i = 0; i < num_shuntsu; i++)
@@ -154,8 +151,72 @@ function calc(hai){
     }
     return result;
 }
+/*
+* 计算手牌对应的向听数
+* 参数：
+* hai：手牌数组
+* 返回值：当牌型合法时返回向听数、推荐出张信息，否则返回false。
+* 示例：（测试值为22334455667788万）
+	{
+		"type": "discard", //为deal时表示待摸牌状态、discard时表示待打牌状态
+		"data": [{ //当type为deal时此字段为待摸有效牌数组，当type为discard时该字段范例如下：
+			"discard": 2, //如果打这张牌
+			"deal": [2, 5, 8], //需要等待这几张牌
+			"count": 8 //需要等待的牌的总张数
+		}, {
+			"discard": 6,
+			"deal": [0, 3, 6],
+			"count": 8
+		}, {
+			"discard": 1,
+			"deal": [1, 4, 7],
+			"count": 6
+		}, {
+			"discard": 3,
+			"deal": [0, 3],
+			"count": 6
+		}, {
+			"discard": 4,
+			"deal": [1, 4, 7],
+			"count": 6
+		}, {
+			"discard": 5,
+			"deal": [5, 8],
+			"count": 6
+		}, {
+			"discard": 7,
+			"deal": [1, 4, 7],
+			"count": 6
+		}],
+		"xts": 0 //向听数，0是听牌或和牌
+	}
+*/
+function xiangting(hai){
+	var hand = [];
+	var rest = [];
+	for (var i = 0; i < 34; ++ i) {
+		hand.push(0);
+		rest.push(0);
+	}
+	for(var i = 0; i < hai.length; i++){
+		hand[hai[i]] ++;
+	}
+	for (var i = 0; i < 34; ++ i) {
+		rest[i] = 4 - hand[i];
+		if (rest[i] < 0)
+			return false;
+	}
+	var ret = xiangtingWork(hand, rest);
+	if (ret["type"] == "error") {
+		console.error("err: " + ret["data"]);
+		return false;
+	}
+	return ret;
+}
+//console.log(xiangting([1,1,2,2,3,3,4,4,5,5,6,6,7,7]));
 module.exports = {
     calc: calc,
+	xiangting: xiangting,
     MAN:MAN,
     MAN1:MAN1,
     MAN2:MAN2,
