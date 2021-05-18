@@ -1,0 +1,4 @@
+class JapaneseMaj {
+    constructor () {
+    }
+}
