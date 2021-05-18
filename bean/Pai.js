@@ -5,6 +5,7 @@
  *	var pai = new Pai("Tongzi",3);
  *	对象方法详见注释
  */
+import globalState from "./State.js";
 const PaiTypeHash = {
 	Wanzi: "Wanzi",
 	Tongzi: "Tongzi",
@@ -20,6 +21,7 @@ const RealNameHash = [
 ];
 export default class Pai {
 	pai_real_ascii; // Number类型
+	isRed; //是否是赤宝牌
 	/*
 		牌的编码，编码数字参考：
 		1-9万：0-8
@@ -34,10 +36,11 @@ export default class Pai {
 		参数：
 		type：牌的种类，"Wanzi"为万子，"Tongzi"为筒子，"Suozi"为索子，"Feng"为风牌，"Sanyuan"为三元牌
 		pai_ascii：牌的数字，如果是风牌那么东1南2西3北4，如果是三元牌那么白1发2中3
+		isRed：是否是赤宝牌，默认为false即非赤宝牌
 		错误：
 		当type或pai_ascii传入错误值时会throw对应的错误提示字符串。
 	*/
-	constructor(type, pai_ascii) {
+	constructor(type, pai_ascii, isRed = false) {
 		if (!Object.values(PaiTypeHash).includes(type))
 			throw "牌种类传入不正确，应传入" + JSON.stringify(Object.values(PaiTypeHash)) + "之一";
 		if (type == PaiTypeHash.Feng) { //风牌
@@ -63,6 +66,7 @@ export default class Pai {
 					break;
 			}
 		}
+		this.isRed = !!isRed;
 	}
 	/*
 		获取牌的类型
@@ -84,6 +88,26 @@ export default class Pai {
 		return PaiTypeHash.Sanyuan;
 	}
 	/*
+		判断牌是否是风牌
+		参数：
+		无
+		返回值：
+		是风牌时返回true，否则返回false
+	*/
+	isFengPai() {
+		return PaiTypeHash.Feng == this.getType();
+	}
+	/*
+		判断牌是否是三元牌
+		参数：
+		无
+		返回值：
+		是三元牌时返回true，否则返回false
+	*/
+	isSanyuanPai() {
+		return PaiTypeHash.Sanyuan == this.getType();
+	}
+	/*
 		判断牌是否是字牌
 		参数：
 		无
@@ -91,7 +115,7 @@ export default class Pai {
 		是字牌时返回true，否则返回false
 	*/
 	isZiPai() {
-		return [PaiTypeHash.Feng, PaiTypeHash.Sanyuan].includes(this.getType());
+		return this.isFengPai() || this.isSanyuanPai();
 	}
 	/*
 		判断牌是否是老头牌
@@ -101,7 +125,7 @@ export default class Pai {
 		是老头牌时返回true，否则返回false
 	*/
 	isLaotouPai() {
-		return [0,8,9,17,18,26].includes(this.pai_real_ascii);
+		return [0, 8, 9, 17, 18, 26].includes(this.pai_real_ascii);
 	}
 	/*
 		判断牌是否是幺九牌
@@ -142,5 +166,61 @@ export default class Pai {
 	*/
 	getNatureName() {
 		return RealNameHash[this.pai_real_ascii];
+	}
+	/*
+		获取该牌的宝牌价值（只计普通宝牌）
+		参数：
+		无
+		返回值：
+		如果不是普通宝牌则返回0，否则返回单个本牌计入的普通宝牌个数。
+	*/
+	getDoraCountNormal() {
+		var ret = 0;
+		globalState.dora.map((pai) => {
+			if (pai.pai_real_ascii == this.pai_real_ascii)
+				ret++;
+		});
+		return ret;
+	}
+	/*
+		获取该牌的宝牌价值（只计里宝牌）
+		参数：
+		无
+		返回值：
+		如果不是里宝牌则返回0，否则返回单个本牌计入的里宝牌个数。
+	*/
+	getDoraCountLi() {
+		var ret = 0;
+		globalState.lidora.map((pai) => {
+			if (pai.pai_real_ascii == this.pai_real_ascii)
+				ret++;
+		});
+		return ret;
+	}
+	/*
+		判断当前牌是否是赤dora
+		参数：
+		无
+		返回值：
+		是赤dora返回true，否则返回false
+	*/
+	isRedDora() {
+		return this.isRed;
+	}
+	/*
+		获取当前牌作为宝牌指示牌时的宝牌对象
+		参数：
+		无
+		返回值：
+		当前牌作为宝牌指示牌时的宝牌Pai对象
+	*/
+	getDoraNextPai() {
+		if (this.isFengPai()) { //风牌时
+			return new Pai(this.getType(), (this.getPaiAscii() + 1) > 4 ? 1 : (this.getPaiAscii() + 1));
+		} else if (this.isSanyuanPai()) { //三元牌
+			return new Pai(this.getType(), (this.getPaiAscii() + 1) > 3 ? 1 : (this.getPaiAscii() + 1));
+		} else { //数牌
+			return new Pai(this.getType(), (this.getPaiAscii() + 1) > 9 ? 1 : (this.getPaiAscii() + 1));
+		}
 	}
 }
