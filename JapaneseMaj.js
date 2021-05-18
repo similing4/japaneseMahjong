@@ -1,5 +1,6 @@
 import state from "./bean/State.js";
 import Pai from "./bean/Pai.js";
+import Parser from "./core/Parser.js";
 
 class JapaneseMaj {
 	constructor(config) {
@@ -19,6 +20,7 @@ class JapaneseMaj {
 	calc(obj){
 		var pai = new Pai("Feng", 4);
 		console.log(pai.getDoraNextPai().getNatureName());
+		console.log(new Parser(obj));
 	}
 }
 function main(config,obj){
