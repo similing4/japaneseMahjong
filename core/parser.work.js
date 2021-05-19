@@ -1,7 +1,23 @@
 /*
 * 本算法来自https://github.com/a710128/JapaneseMahjongJS项目，本人不能读懂本代码的有关含义，故而仅作引用及作以些微修改方便引用。
 * 使用方式：
-* 
+* import calc_xts from "./parser.work.js";
+* calc_xts(hand,rest);
+* 参数说明：
+* hand：将Pai对象的pai_real_ascii作为手牌的下标所产生的数量表。（如11123456789999m传入的hand如下：
+	[
+		3,1,1,1,1,1,1,1,4,
+		0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0
+	]
+* rest：将Pai对象的pai_real_ascii作为手牌的下标所产生的剩余数量表。（如11123456789999m传入的hand如下：
+	[
+		1,3,3,3,3,3,3,3,0,
+		4,4,4,4,4,4,4,4,4,
+		4,4,4,4,4,4,4,4,4,
+		4,4,4,4,4,4,4
+	]
 */
 import FastBitSet from "fastbitset";
 var make_array = function(l) {
@@ -95,7 +111,7 @@ var calc_xts = function(hand, rest) {
 		throw "手牌输入有误";
 	}
 	// check hand sum
-	
+
 	//  0~9  0~9  0~8 0~2 0~2 0~1
 	// f[10] [10] [9] [3] [3] [2]
 	var f = make_array([10, 10, 10, 3, 3, 2]);
