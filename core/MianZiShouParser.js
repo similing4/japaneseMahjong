@@ -27,18 +27,22 @@ const PaiState = {
 };
 class MianZiShouParser {
 	paiList; //传入的手牌
-	paiState = PaiState.Discard; //当前手牌状态
-	xiangTingCount = -1; //向听数
-	divideResult = []; //手牌拆分结果
+	isHele = false; //牌型在面子手和牌条件下是否和了
 	/*
 	 *	构造方法
 	 *	参数：
 	 *	paiList：手牌数组，应传入Pai对象的数组
-	 *	错误：
-	 *	当输入牌不合法时会throw错误，请注意catch
-	*/
+	 */
 	constructor(paiList) {
 		this.paiList = paiList;
+	}
+	/*
+	 *	计算向听数
+	 *	参数：
+	 *	错误：
+	 *	当输入牌不合法时会throw错误，请注意catch
+	 */
+	calcXiangting() {
 		var hand = [
 			0, 0, 0, 0, 0, 0, 0, 0, 0,
 			0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -58,9 +62,11 @@ class MianZiShouParser {
 				throw "输入的牌数不正确";
 		});
 		var calcResult = calcMain(hand, rest);
-		this.xiangTingCount = calcResult.xiangTingCount;
-		this.paiState = calcResult.type;
-		this.divideResult = calcResult.data;
+		var ret = {};
+		ret.xiangTingCount = calcResult.xiangTingCount; //向听数
+		ret.paiState = calcResult.type; //当前手牌状态
+		ret.divideResult = calcResult.data; //手牌拆分结果
+		return ret;
 	}
 
 	/*
@@ -105,110 +111,29 @@ class MianZiShouParser {
 			}
 			其中刻子顺子及雀头给出的都是牌型中对应的下标，应在计算前确定你的每个牌型下标对应的牌是哪一张。
 		例：求手牌22334455667788m的所有可能手牌拆分：
-			根据【表键计算方法】计算得到该牌型的键为
+			根据【表键计算方法】计算得到该牌型的键二进制为：111011011011011011011。
+			键的十六进制为：0x1DB6DB
+			查到表中该键的值为：[0x21104420,0x211000e0,0x20cc01a0]
+			因此该牌型有三种手牌拆分方式。取其第二种拆分方式0x211000e0：
+			转换为2进制为0010 0001 0001 0000 0000 0000 1110 0000
+			根据chunk结构获悉刻子数为二进制的000，顺子数为二进制的100（即4个顺子），雀头是0011（即下标为3的，就是传入的第四种牌，也就是5萬）
+			其中刻子数为0所以不计。顺子有四个分别是：0100 0100 0000 0000，即下标是0 0 4 4，即2萬，2萬，6萬，6萬这些开头的顺子。
+			于是可以确定该牌型可能为 55雀头 234 234 678 678顺子拆分。
 	*/
-	divideMianzi() {
-		var hai = this.paiList.map((pai)=>{
-			return pai.pai_real_ascii;
-		})
-		var hand = [
-			0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0
-		];
-		this.paiList.map((pai) => {
-			hand[pai.pai_real_ascii]++;
+	calcMianzi() {
+		var wanzi = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+		var tongzi = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+		var suozi = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+		var zipai = [0, 0, 0, 0, 0, 0, 0];
+		this.paiList.map((pai) => { //构建牌组数量表
+			if(pai.isZiPai()){
+				zipai[pai.pai_real_ascii - 27] ++;
+			}
+			switch(pai.getType()){
+				case ;
+			}
 		});
-		const calc_key = function(n, pos) { //计算得到表中的键 n是34种牌每个个数数组，pos是待返回的14张牌 22334455667788      11111100000001111
-			var p = -1;
-			var x = 0;
-			var pos_p = 0;
-			var hasBefore = false; // 是否有上一张牌
-			// 数牌
-			//逆向，有1张牌计，有2张牌计11，3张计1111，四张计111111，断开计01连续计0。比如22445566778899：，其22为2张2计11，
-			for (var i = 0; i < 3; i++) { //遍历万子、筒子、索子
-				for (var j = 0; j < 9; j++) { //遍历牌的数字
-					if (n[i * 9 + j] == 0) { // 没有这个数牌
-						if (hasBefore) { //有上一张牌时
-							hasBefore = false; //切换上张牌存在开关
-							x |= (0x1 << p); //1
-							p++;
-						}
-					} else {
-						p++;
-						hasBefore = true;
-						pos[pos_p++] = i * 9 + j;
-						switch (n[i * 9 + j]) {
-							case 2:
-								x |= (0x3 << p); //11
-								p += 2;
-								break;
-							case 3:
-								x |= (0xF << p); //1111
-								p += 4;
-								break;
-							case 4:
-								x |= (0x3F << p); //111111
-								p += 6;
-								break;
-						}
-					}
-				}
-				if (hasBefore) {
-					hasBefore = false;
-					x |= (0x1 << p);
-					p++;
-				}
-			}
-			// 字牌
-			for (var i = TON; i <= CHU; i++) {
-				if (n[i] > 0) {
-					p++;
-					pos[pos_p++] = i;
-					switch (n[i]) {
-						case 2:
-							x |= (0x3 << p);
-							p += 2;
-							break;
-						case 3:
-							x |= (0xF << p);
-							p += 4;
-							break;
-						case 4:
-							x |= (0x3F << p);
-							p += 6;
-							break;
-					}
-					x |= (0x1 << p);
-					p++;
-				}
-			}
-			return x;
-		}
-		var pos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-		var key = calc_key(hand, pos);
-		var ret = tbl[key];
-		if (!ret)
-			return false;
-		var result = [];
-		for (var ri in ret) {
-			var r = ret[ri];
-			var item = {
-				header: 0,
-				kezi: [],
-				shunzi: []
-			};
-			item.header = (pos[(r >> 6) & 0xF]); //右数第7-10位存储着牌型中的雀头（6789）
-			var num_kotsu = r & 0x7; //右数第1-3位存储着刻子数（012）
-			var num_shuntsu = (r >> 3) & 0x7; //右数第4-6位存着顺子数（345）
-			for (var i = 0; i < num_kotsu; i++) //每个刻子占4位
-				item.kezi.push(pos[(r >> (10 + i * 4)) & 0xF]);
-			for (var i = 0; i < num_shuntsu; i++) //每个顺子占4位
-				item.shunzi.push(pos[(r >> (10 + num_kotsu * 4 + i * 4)) & 0xF]);
-			result.push(item);
-		}
-		return result;
+		//当前牌有1张不计，有2张牌计2个1，3张计4个1，四张计6个1，花色间断或数字间断计01，连续则计0。字牌全部计为数字不连续的不同花色。最终计不连续。
 	}
 }
-export default Parser;
+export default MianZiShouParser;
