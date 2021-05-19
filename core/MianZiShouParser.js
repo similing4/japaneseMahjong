@@ -21,6 +21,7 @@
  *	对象方法详见注释
  */
 import calcMain from "./parser.work.js";
+import Pai from "../bean/Pai.js";
 const PaiState = {
 	Discard: "DISCARD", //待出牌状态或自摸/荣和状态
 	Deal: "DEAL" //待摸牌状态
@@ -126,14 +127,69 @@ class MianZiShouParser {
 		var suozi = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 		var zipai = [0, 0, 0, 0, 0, 0, 0];
 		this.paiList.map((pai) => { //构建牌组数量表
-			if(pai.isZiPai()){
-				zipai[pai.pai_real_ascii - 27] ++;
+			if (pai.isZiPai()) {
+				zipai[pai.pai_real_ascii - 27]++;
+				return;
 			}
-			switch(pai.getType()){
-				case ;
+			switch (pai.getType()) {
+				case "Wanzi":
+					wanzi[pai.getPaiAscii() - 1]++;
+					return;
+				case "Tongzi":
+					tongzi[pai.getPaiAscii() - 1]++;
+					return;
+				case "Suozi":
+					suozi[pai.getPaiAscii() - 1]++;
+					return;
 			}
 		});
+		var key = this._calcKey(wanzi, tongzi, suozi, zipai);
+		console.log(key);
+	}
+	/*
+	 * 计算表键（算法详情请见calcMianzi方法的注释）
+	 * 参数：
+	 * wanzi：萬子的数量数组，例：234678m应传入[0, 1, 1, 1, 0, 1, 1, 1, 0]。
+	 * tongzi：筒子的数量数组，例同萬子
+	 * suozi：索子的数量数组，例同萬子
+	 * zipai：字牌的数量数组，按照东南西北白发中的顺序排列。例如东东南南发发应该传[2, 2, 0, 0, 0, 2, 0]。
+	 */
+	_calcKey(wanzi, tongzi, suozi, zipai) {
 		//当前牌有1张不计，有2张牌计2个1，3张计4个1，四张计6个1，花色间断或数字间断计01，连续则计0。字牌全部计为数字不连续的不同花色。最终计不连续。
+		var paiArr = []; //被计入的牌顺序
+		var chunkArr = []; //构造数据数组，明晰算法，此处为了可读性降低了少许效率
+		var sePaiTypeArr = ["Wanzi", "Tongzi", "Suozi"];
+		[wanzi, tongzi, suozi].map((sePai, sePaiIndex) => { //普通色牌遍历
+			if (sePai.reduce((a, b) => { return a + b; }) > 0) { //有该种色牌的情况下
+				sePai.map((paiCount, index) => {
+					if (paiCount == 0) { //当前张没有牌
+						if (index > 0 && wanzi[index - 1] > 0) //上张有牌这张没有，说明断续了，计入01
+							chunkArr.push("01");
+						return;
+					}
+					if (index > 0 && wanzi[index - 1] > 0) //上张有牌这张也有，说明连续了，计入0
+						chunkArr.push("0");
+					paiArr.push(new Pai(sePaiTypeArr[sePaiIndex], index + 1));
+					chunkArr.push(Array(paiCount * 2 - 1).join("1")); //需要计入2n-2个1，1张即0个1
+				});
+				if(sePai[8] > 0)
+					chunkArr.push("01"); //切换花色计入不连续标志01。如果有9那么没有记录最后一次的01故而需要补记
+			}
+		})
+		if (zipai.reduce((a, b) => { return a + b; }) > 0) { //有字牌的情况下
+			zipai.map((paiCount, index) => {
+				if (paiCount == 0)
+					return; //不需要考虑字牌的连续性
+				if (index > 3) //三元牌
+					paiArr.push(new Pai("Sanyuan", index - 3));
+				else
+					paiArr.push(new Pai("Feng", index + 1));
+				chunkArr.push(Array(paiCount * 2 - 1).join("1")); //需要计入2n-2个1，1张即0个1
+				chunkArr.push("01"); //字牌所有项都要设置间断
+			});
+		}
+		console.log(paiArr);
+		return chunkArr.reverse().join();
 	}
 }
 export default MianZiShouParser;
