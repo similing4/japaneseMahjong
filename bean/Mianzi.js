@@ -40,6 +40,36 @@ export default class Mianzi {
 		this.basePai = pai;
 	}
 	/*
+		判断该面子是否是刻子
+		参数：
+		无
+		返回值：
+		是刻子时返回true，否则返回false
+	*/
+	isKezi(){
+		return this.type == MianziTypeHash.Kezi || this.type == MianziTypeHash.Gangzi;
+	}
+	/*
+		判断该面子是否是杠子
+		参数：
+		无
+		返回值：
+		是杠子时返回true，否则返回false
+	*/
+	isGangzi(){
+		return this.type == MianziTypeHash.Kezi || this.type == MianziTypeHash.Gangzi;
+	}
+	/*
+		判断该面子是否是顺子
+		参数：
+		无
+		返回值：
+		是顺子时返回true，否则返回false
+	*/
+	isShunzi(){
+		return this.type == MianziTypeHash.Shunzi;
+	}
+	/*
 		判断该面子是否是暗刻
 		参数：
 		无

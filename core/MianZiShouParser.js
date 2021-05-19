@@ -21,7 +21,9 @@
  *	对象方法详见注释
  */
 import calcMain from "./parser.work.js";
+import Mianzi from "../bean/Mianzi.js";
 import Pai from "../bean/Pai.js";
+import TableForSearch from "../data/TableForSearch.js";
 const PaiState = {
 	Discard: "DISCARD", //待出牌状态或自摸/荣和状态
 	Deal: "DEAL" //待摸牌状态
@@ -77,9 +79,9 @@ class MianZiShouParser {
 	* 返回值：非面子手和牌牌型返回false，否则返回面子、雀头对象对应的数组
 	* 示例：（测试值为22334455667788万）
 	    [
-	      { header: Pai("Wanzi",1), mianzi: [ Pai("Wanzi",2), Pai("Wanzi",2), Pai("Wanzi",5), Pai("Wanzi",5) ] },
-	      { header: Pai("Wanzi",4), mianzi: [ Pai("Wanzi",1), Pai("Wanzi",1), Pai("Wanzi",5), Pai("Wanzi",5) ] },
-	      { header: Pai("Wanzi",7), mianzi: [ Pai("Wanzi",1), Pai("Wanzi",1), Pai("Wanzi",4), Pai("Wanzi",4) ] }
+	      { header: Pai("Wanzi",2), mianzi: [ Mianzi("Shunzi",Pai("Wanzi",3)), Mianzi("Shunzi",Pai("Wanzi",3)), Mianzi("Shunzi",Pai("Wanzi",6)), Mianzi("Shunzi",Pai("Wanzi",6)) ] },
+	      { header: Pai("Wanzi",5), mianzi: [ Mianzi("Shunzi",Pai("Wanzi",2)), Mianzi("Shunzi",Pai("Wanzi",2)), Mianzi("Shunzi",Pai("Wanzi",6)), Mianzi("Shunzi",Pai("Wanzi",6)) ] },
+	      { header: Pai("Wanzi",8), mianzi: [ Mianzi("Shunzi",Pai("Wanzi",2)), Mianzi("Shunzi",Pai("Wanzi",2)), Mianzi("Shunzi",Pai("Wanzi",5)), Mianzi("Shunzi",Pai("Wanzi",5)) ] },
 	    ]
 	   说明：本方法采用查表法计算结果，表的构成结构为：{牌型:[拆分可能]}，其意义如下：
 	   牌型：表中的牌型以二进制存储。牌型由牌的数组转换而成。转换方式如下：
@@ -143,19 +145,36 @@ class MianZiShouParser {
 					return;
 			}
 		});
-		var key = this._calcKey(wanzi, tongzi, suozi, zipai);
-		console.log(key);
+		var key = this._calcKey(wanzi, tongzi, suozi, zipai); //获取表键
+		if(!TableForSearch[key.key]) //如果不存在表键说明不是面子手和牌
+			return false; //不是面子手和牌牌型直接返回false
+		var res = this._parseTableVal(TableForSearch[key.key],key.paiArr); //计算牌型对应的数据含义
+		console.log(res);
+		return res;
 	}
 	/*
-	 * 计算表键（算法详情请见calcMianzi方法的注释）
+	 * 计算表键及表中牌型数字对应含义哈希（算法详情请见calcMianzi方法的注释）
 	 * 参数：
 	 * wanzi：萬子的数量数组，例：234678m应传入[0, 1, 1, 1, 0, 1, 1, 1, 0]。
 	 * tongzi：筒子的数量数组，例同萬子
 	 * suozi：索子的数量数组，例同萬子
 	 * zipai：字牌的数量数组，按照东南西北白发中的顺序排列。例如东东南南发发应该传[2, 2, 0, 0, 0, 2, 0]。
+	 * 返回值：表的键（数字）与表值中数据对应含义。例：
+	 * 传入22334455667788后返回值如下：
+	    {
+		 	paiArr: [
+			    Pai { pai_real_ascii: 1, isRed: false },
+			    Pai { pai_real_ascii: 2, isRed: false },
+			    Pai { pai_real_ascii: 3, isRed: false },
+			    Pai { pai_real_ascii: 4, isRed: false },
+			    Pai { pai_real_ascii: 5, isRed: false },
+			    Pai { pai_real_ascii: 6, isRed: false },
+			    Pai { pai_real_ascii: 7, isRed: false }
+			],
+			key: 1947355
+	    }
 	 */
 	_calcKey(wanzi, tongzi, suozi, zipai) {
-		//当前牌有1张不计，有2张牌计2个1，3张计4个1，四张计6个1，花色间断或数字间断计01，连续则计0。字牌全部计为数字不连续的不同花色。最终计不连续。
 		var paiArr = []; //被计入的牌顺序
 		var chunkArr = []; //构造数据数组，明晰算法，此处为了可读性降低了少许效率
 		var sePaiTypeArr = ["Wanzi", "Tongzi", "Suozi"];
@@ -188,8 +207,44 @@ class MianZiShouParser {
 				chunkArr.push("01"); //字牌所有项都要设置间断
 			});
 		}
-		console.log(paiArr);
-		return chunkArr.reverse().join();
+		var str = chunkArr.reverse().join("");
+		return {
+			paiArr:paiArr,
+			key: parseInt(str,2)
+		}
+	}
+	/*
+	* 根据表值及表中牌型数字对应含义哈希计算手牌对应的所有面子可能（算法详情请见calcMianzi方法的注释）
+	* 参数：
+	* val：查表法表中的值，应为一数组，其中数组每一项都是包含牌型数据的数字。
+	* tongzi：筒子的数量数组，例同萬子
+	* 返回值：面子、雀头对象对应的数组
+	* 示例：（测试值为22334455667788萬对应的值：[0x21104420,0x211000e0,0x20cc01a0]）
+	    [
+	      { header: Pai("Wanzi",2), mianzi: [ Mianzi("Shunzi",Pai("Wanzi",3)), Mianzi("Shunzi",Pai("Wanzi",3)), Mianzi("Shunzi",Pai("Wanzi",6)), Mianzi("Shunzi",Pai("Wanzi",6)) ] },
+	      { header: Pai("Wanzi",5), mianzi: [ Mianzi("Shunzi",Pai("Wanzi",2)), Mianzi("Shunzi",Pai("Wanzi",2)), Mianzi("Shunzi",Pai("Wanzi",6)), Mianzi("Shunzi",Pai("Wanzi",6)) ] },
+	      { header: Pai("Wanzi",8), mianzi: [ Mianzi("Shunzi",Pai("Wanzi",2)), Mianzi("Shunzi",Pai("Wanzi",2)), Mianzi("Shunzi",Pai("Wanzi",5)), Mianzi("Shunzi",Pai("Wanzi",5)) ] },
+	    ]
+	*/
+	_parseTableVal(val,paiArr){
+		return val.map((paixing)=>{ //拿取每种情况
+			var keziCount = paixing & 0x7;paixing >>= 3; //读取3位作为刻子数
+			var shunziCount = paixing & 0x7;paixing >>= 3; //读取3位作为顺子数
+			var header = paixing & 0xF;paixing >>= 4; //读取4位作为雀头
+			var ret = { //构造返回值
+				header: paiArr[header],
+				mianzi: []
+			};
+			for(var i=0;i<keziCount;i++){
+				var kezi = paixing & 0xF;paixing >>= 4; //逐次读取4位作为刻子
+				ret.mianzi.push(new Mianzi("Kezi",false,paiArr[kezi]));
+			}
+			for(var i=0;i<shunziCount;i++){
+				var shunzi = paixing & 0xF;paixing >>= 4; //逐次读取4位作为刻子
+				ret.mianzi.push(new Mianzi("Shunzi",false,paiArr[shunzi]));
+			}
+			return ret;
+		});
 	}
 }
 export default MianZiShouParser;
