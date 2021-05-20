@@ -18,6 +18,12 @@
 		4,4,4,4,4,4,4,4,4,
 		4,4,4,4,4,4,4
 	]
+* 返回值：
+* {
+	xiangTingCount: 1, //向听数，和牌与听牌均为0
+	type: "DISCARD", //DISCARD为待出牌状态或自摸/荣和状态，DEAL为待摸牌状态
+	data: [], //牌的编号，待出牌状态或自摸/荣和状态时意为推荐打的牌，待摸牌状态为推荐摸的牌。
+* }
 */
 import FastBitSet from "fastbitset";
 var make_array = function(l) {

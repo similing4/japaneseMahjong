@@ -223,4 +223,34 @@ export default class Pai {
 			return new Pai(this.getType(), (this.getPaiAscii() + 1) > 9 ? 1 : (this.getPaiAscii() + 1));
 		}
 	}
+	/*
+		根据real_ascii获取Pai对象的工厂方法
+		参数：
+		real_ascii：牌的real_ascii码
+		返回值：
+		Pai对象
+	*/
+	static fromRealAscii(v) {
+		if (v > 33 || v < 0)
+			throw "没有这种牌：" + v;
+		var type;
+		var ascii;
+		if (v < 9) {
+			type = PaiTypeHash.Wanzi;
+			ascii = v + 1;
+		} else if (v < 18) {
+			type = PaiTypeHash.Tongzi;
+			ascii = v - 8;
+		} else if (v < 27) {
+			type = PaiTypeHash.Suozi;
+			ascii = v - 17;
+		} else if (v < 31) {
+			type = PaiTypeHash.Feng;
+			ascii = v - 26;
+		} else {
+			type = PaiTypeHash.Sanyuan;
+			ascii = v - 30;
+		}
+		return new Pai(type, ascii);
+	}
 }

@@ -1,6 +1,6 @@
 import state from "./bean/State.js";
 import Pai from "./bean/Pai.js";
-import MianZiShouParser from "./core/MianZiShouParser.js";
+import GuoShiWuShuangParser from "./core/GuoShiWuShuangParser.js";
 import Paixing from "./bean/Paixing.js";
 import Mianzi from "./bean/Mianzi.js";
 
@@ -20,8 +20,8 @@ class JapaneseMaj {
 		state.isDiHe = config.isDiHe; //是否是地和
 	}
 	calc(obj){
-		var parser = new MianZiShouParser(obj.hand);
-		var ret = parser.calcMianzi();
+		var parser = new GuoShiWuShuangParser(obj.hand);
+		var ret = parser.calcXiangting();
 		console.log(ret);
 	}
 }
@@ -42,4 +42,4 @@ main({
 	isQiangGang: false,
 	isTianHe: false,
 	isDiHe: false
-}, Paixing.parseFromString("22334455m 678m 678m"));
+}, Paixing.parseFromString("22334455m678m678m"));

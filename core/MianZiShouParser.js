@@ -30,7 +30,6 @@ const PaiState = {
 };
 class MianZiShouParser {
 	paiList; //传入的手牌
-	isHele = false; //牌型在面子手和牌条件下是否和了
 	/*
 	 *	构造方法
 	 *	参数：
@@ -42,6 +41,13 @@ class MianZiShouParser {
 	/*
 	 *	计算向听数
 	 *	参数：
+	 *  无
+	 *  返回值如下：
+	 *  {
+	 		xiangTingCount: 1, //向听数，和牌与听牌均为0
+	 		paiState: "DISCARD", //PaiState类型，标识待摸牌状态还是待出牌状态
+	 		divideResult: [], //List<Pai>类型，待出牌状态或自摸/荣和状态时意为推荐打的牌，待摸牌状态为推荐摸的牌。
+	 	}
 	 *	错误：
 	 *	当输入牌不合法时会throw错误，请注意catch
 	 */
@@ -68,7 +74,9 @@ class MianZiShouParser {
 		var ret = {};
 		ret.xiangTingCount = calcResult.xiangTingCount; //向听数
 		ret.paiState = calcResult.type; //当前手牌状态
-		ret.divideResult = calcResult.data; //手牌拆分结果
+		ret.divideResult = calcResult.data.map((item)=>{
+			return Pai.fromRealAscii(item);
+		});
 		return ret;
 	}
 
