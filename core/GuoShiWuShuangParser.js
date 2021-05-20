@@ -1,6 +1,6 @@
 /*
  *	国士无双牌型解析类
- *	用于国士无双手和牌向听数及和牌拆解的解析
+ *	用于国士无双和牌向听数及和牌拆解的解析
  *	使用方法：
  *	var parser = new GuoShiWuShuangParser([
  		new Pai("Wanzi",1),
@@ -51,7 +51,7 @@ class GuoShiWuShuangParser {
 	 *	当输入牌不合法时会throw错误，请注意catch
 	 */
 	calcXiangting() {
-		if(this.paiList.length < 13)
+		if (this.paiList.length < 13)
 			throw "国士无双在鸣牌后不能计算向听数与牌效";
 		var hand = [
 			0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -71,30 +71,47 @@ class GuoShiWuShuangParser {
 			rest[pai.pai_real_ascii]--;
 			if (rest[pai.pai_real_ascii] < 0)
 				throw "输入的牌数不正确";
-			if(!guoshiNums.includes(pai.pai_real_ascii))
+			if (!guoshiNums.includes(pai.pai_real_ascii))
 				wuxiaopai.push(pai);
 		});
 		var ret = {};
 		var res = [];
-		ret.xiangTingCount = guoshiNums.reduce((sum,pai_real_ascii,index)=>{ //国士无双的向听数直接数幺九的数量就行了，为0的就是一次向听计数，也是待牌
-			if(index == 1 && hand[0] == 0){
-				sum ++;
+		ret.xiangTingCount = guoshiNums.reduce((sum, pai_real_ascii, index) => { //国士无双的向听数直接数幺九的数量就行了，为0的就是一次向听计数，也是待牌
+			if (index == 1 && hand[0] == 0) {
+				sum++;
 				res.push(Pai.fromRealAscii(0));
 			}
-			if(hand[pai_real_ascii] == 0){
-				sum ++;
+			if (hand[pai_real_ascii] == 0) {
+				sum++;
 				res.push(Pai.fromRealAscii(pai_real_ascii));
 			}
 			return sum;
 		});
-		if(this.paiList.length == 13){
+		if (this.paiList.length == 13) {
 			ret.paiState = PaiState.Deal
 			ret.divideResult = res;
-		}else{
+		} else {
 			ret.paiState = PaiState.Discard;
 			ret.divideResult = wuxiaopai;
 		}
+		if (ret.paiState == PaiState.Deal && ret.xiangTingCount == 0) //十三面听牌
+			ret.divideResult = guoshiNums.map((i) => {
+				return Pai.fromRealAscii(i);
+			});
 		return ret;
+	}
+	/*
+	 * 判断是否和牌
+	 * 参数：
+	 * 无
+	 * 返回值：
+	 * 和牌了返回true，否则返回false
+	 */
+	isHepai() {
+		if (this.paiList.length < 14)
+			return false;
+		var xiangting = this.calcXiangting();
+		return xiangting.xiangTingCount == 0 && xiangting.divideResult.length == 0;
 	}
 }
 export default GuoShiWuShuangParser;
