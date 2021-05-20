@@ -149,7 +149,6 @@ class MianZiShouParser {
 		if(!TableForSearch[key.key]) //如果不存在表键说明不是面子手和牌
 			return false; //不是面子手和牌牌型直接返回false
 		var res = this._parseTableVal(TableForSearch[key.key],key.paiArr); //计算牌型对应的数据含义
-		console.log(res);
 		return res;
 	}
 	/*

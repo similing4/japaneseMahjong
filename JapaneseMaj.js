@@ -1,6 +1,8 @@
 import state from "./bean/State.js";
 import Pai from "./bean/Pai.js";
 import MianZiShouParser from "./core/MianZiShouParser.js";
+import Paixing from "./bean/Paixing.js";
+import Mianzi from "./bean/Mianzi.js";
 
 class JapaneseMaj {
 	constructor(config) {
@@ -18,10 +20,10 @@ class JapaneseMaj {
 		state.isDiHe = config.isDiHe; //是否是地和
 	}
 	calc(obj){
-		var pai = new Pai("Feng", 4);
-		console.log(pai.getDoraNextPai().getNatureName());
-		var parser = new MianZiShouParser(obj);
-		parser.calcMianzi();
+		var parser = new MianZiShouParser(obj.hand);
+		var ret = parser.calcMianzi();
+		console.log(ret);
+		var hand = [];
 	}
 }
 function main(config,obj){
@@ -41,19 +43,17 @@ main({
 	isQiangGang: false,
 	isTianHe: false,
 	isDiHe: false
-},[
-	new Pai("Wanzi",2),
-	new Pai("Wanzi",2),
-	new Pai("Wanzi",3),
-	new Pai("Wanzi",3),
-	new Pai("Wanzi",4),
-	new Pai("Wanzi",4),
-	new Pai("Wanzi",5),
-	new Pai("Wanzi",5),
-	new Pai("Wanzi",6),
-	new Pai("Wanzi",6),
-	new Pai("Wanzi",7),
-	new Pai("Wanzi",7),
-	new Pai("Wanzi",8),
-	new Pai("Wanzi",8),
-]);
+}, new Paixing([
+		new Pai("Wanzi",2),
+		new Pai("Wanzi",2),
+		new Pai("Wanzi",3),
+		new Pai("Wanzi",3),
+		new Pai("Wanzi",4),
+		new Pai("Wanzi",4),
+		new Pai("Wanzi",5),
+		new Pai("Wanzi",5)
+	],[
+		new Mianzi("Shunzi",false,new Pai("Wanzi",6)),
+		new Mianzi("Shunzi",false,new Pai("Wanzi",6))
+	])
+);
