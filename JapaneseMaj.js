@@ -42,4 +42,4 @@ main({
 	isQiangGang: false,
 	isTianHe: false,
 	isDiHe: false
-}, Paixing.parseFromString("1111m33m55m66m11s22s"));
+}, Paixing.parseFromString("11m33m55m66m11s227s"));
