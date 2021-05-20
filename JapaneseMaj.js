@@ -23,7 +23,6 @@ class JapaneseMaj {
 		var parser = new MianZiShouParser(obj.hand);
 		var ret = parser.calcMianzi();
 		console.log(ret);
-		Paixing.parseFromString("44s23m4m 111z 567m 99999p");
 	}
 }
 function main(config,obj){
@@ -43,17 +42,4 @@ main({
 	isQiangGang: false,
 	isTianHe: false,
 	isDiHe: false
-}, new Paixing([
-		new Pai("Wanzi",2),
-		new Pai("Wanzi",2),
-		new Pai("Wanzi",3),
-		new Pai("Wanzi",3),
-		new Pai("Wanzi",4),
-		new Pai("Wanzi",4),
-		new Pai("Wanzi",5),
-		new Pai("Wanzi",5)
-	],[
-		new Mianzi("Shunzi",false,new Pai("Wanzi",6)),
-		new Mianzi("Shunzi",false,new Pai("Wanzi",6))
-	])
-);
+}, Paixing.parseFromString("22334455m 678m 678m"));
