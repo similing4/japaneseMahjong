@@ -35,13 +35,13 @@ export default class Paixing {
 	constructor(hand, fulu) {
 		if (![13, 14].includes(hand.length + fulu.length * 3)) //总牌数（不计杠子）应为13或14
 			throw "牌数不正确，手牌数加副露数乘3应为13或14张";
-		if(!(hand instanceof Array))
+		if (!(hand instanceof Array))
 			throw "手牌传入参数应为数组类型，您传入的参数是" + hand;
 		hand.map((pai) => {
 			if (!(pai instanceof Pai))
 				throw "手牌中传入参数应为Pai类型，您传入的参数是：" + pai;
 		});
-		if(!(fulu instanceof Array))
+		if (!(fulu instanceof Array))
 			throw "副露传入参数应为数组类型，您传入的参数是" + hand;
 		fulu.map((mianzi) => {
 			if (!(mianzi instanceof Mianzi))
@@ -61,11 +61,19 @@ export default class Paixing {
 		副露部分由手牌部分延伸，可由如下几种写法组成：
 			吃：345m（三四五萬顺子） 碰：222z（南风刻子） 明杠：4444z（北风明杠） 暗杠：33333z(西风暗杠)
 		和牌项请放到【手牌】最后，副露后续不满足输入规则的内容会被忽略。
-		例：手牌四索两个、二三萬，摸来的牌是四萬，副露为东风碰，五六七万吃，9筒暗杠，那么手牌的格式应为：44s23m4m 111z 567m 99999p
+		例：手牌四索两个、二三萬，摸来的牌是四萬，副露为东风碰，五六七万吃，9筒暗杠，那么手牌的格式应为：
+			44s23m4m 111z 567m 99999p
 		错误：
-		输入格式不正确时报错。
+			输入格式不正确时报错。
 	*/
-	static parseFromString(str){
-		;
+	static parseFromString(str) {
+		const number = "1234567890".split("");
+		var data = str.split(" ");
+		var hand = data[0];
+		var fulu = [];
+		for (var i = 1; i < data.length; i++){
+			if(number.includes(data[i].substring(0,1)))
+				fulu.push(data[i]);
+		}
 	}
 }

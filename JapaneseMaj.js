@@ -23,7 +23,7 @@ class JapaneseMaj {
 		var parser = new MianZiShouParser(obj.hand);
 		var ret = parser.calcMianzi();
 		console.log(ret);
-		var hand = [];
+		Paixing.parseFromString("44s23m4m 111z 567m 99999p");
 	}
 }
 function main(config,obj){
