@@ -21,7 +21,6 @@
  */
 import Pai from "./Pai.js"
 import Mianzi from "./Mianzi.js";
-import state from "./State.js";
 export default class Paixing {
 	hand; // List<Pai>类型，存储手牌的数据
 	fulu; // List<Mianzi>类型，存储副露区的数据。

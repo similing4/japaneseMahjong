@@ -5,7 +5,6 @@
  *	var pai = new Pai("Tongzi",3);
  *	对象方法详见注释
  */
-import globalState from "./State.js";
 const PaiTypeHash = {
 	Wanzi: "Wanzi",
 	Tongzi: "Tongzi",
@@ -170,11 +169,11 @@ export default class Pai {
 	/*
 		获取该牌的宝牌价值（只计普通宝牌）
 		参数：
-		无
+		globalState：State对象
 		返回值：
 		如果不是普通宝牌则返回0，否则返回单个本牌计入的普通宝牌个数。
 	*/
-	getDoraCountNormal() {
+	getDoraCountNormal(globalState) {
 		var ret = 0;
 		globalState.dora.map((pai) => {
 			if (pai.pai_real_ascii == this.pai_real_ascii)
@@ -185,11 +184,11 @@ export default class Pai {
 	/*
 		获取该牌的宝牌价值（只计里宝牌）
 		参数：
-		无
+		globalState：State对象
 		返回值：
 		如果不是里宝牌则返回0，否则返回单个本牌计入的里宝牌个数。
 	*/
-	getDoraCountLi() {
+	getDoraCountLi(globalState) {
 		var ret = 0;
 		globalState.lidora.map((pai) => {
 			if (pai.pai_real_ascii == this.pai_real_ascii)

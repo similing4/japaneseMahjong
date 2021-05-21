@@ -103,7 +103,7 @@ class Parser {
 	 *	错误：
 	 *	当输入牌不合法时会throw错误，请注意catch
 	 */
-	getYakuCalculator() {
+	getYakuCalculator(state) {
 		var mianZiShouParser = new MianZiShouParser(this.paixing.hand);
 		var qiDuiZiParser = new QiDuiZiParser(this.paixing.hand);
 		var guoShiWuShuangParser = new GuoShiWuShuangParser(this.paixing.hand);
@@ -124,7 +124,7 @@ class Parser {
 		if (this.paixing.fulu.length > 0) {
 			if (hePaiPaixingList.length == 0)
 				return false;
-			return new YakuCalculator(hePaiPaixingList);
+			return new YakuCalculator(hePaiPaixingList,state);
 		}
 		if (qiDuiZiParser.isHepai())
 			hePaiPaixingList.push(new HePaiPaixing({
@@ -141,7 +141,7 @@ class Parser {
 			}));
 		if (hePaiPaixingList.length == 0)
 			return false;
-		return new YakuCalculator(hePaiPaixingList);
+		return new YakuCalculator(hePaiPaixingList,state);
 	}
 }
 export default Parser;

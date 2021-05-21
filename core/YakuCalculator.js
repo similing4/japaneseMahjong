@@ -23,28 +23,32 @@
 	 			new Pai("Wanzi",9),
 		 	]
 		})
- 	]);
+ 	],new State());
  *	对象方法详见注释
  */
 import Pai from "../bean/Pai.js"
 import Mianzi from "../bean/Mianzi.js";
-import state from "../bean/State.js";
+import State from "../bean/State.js";
 import HePaiPaixing from "../bean/HePaiPaixing.js";
 export default class YakuCalculator {
 	hePaiPaixingList; // List<HePaiPaixing>类型，所有的和牌牌型可能
-
+	state; // State类型，全局状态
 	/*
 		构造方法
 		参数：
 			hePaiPaixingList：HePaiPaixing对象的数组，需要使用Parser获取或自定义。
+			state：State类型，全局配置
 		错误：
 			当传入数据不合法时报错。
 	*/
-	constructor(hePaiPaixingList) {
-		hePaiPaixingList.map((hePaiPaixing) => {
+	constructor(hePaiPaixingList,state) {
+		if(!(state instanceof State))
+			throw "参数state应为State类型：" + state;
+		this.state = state;
+		this.hePaiPaixingList = hePaiPaixingList.map((hePaiPaixing) => {
 			if (!(hePaiPaixing instanceof HePaiPaixing))
 				throw "参数hePaiPaixingList应为HePaiPaixing类型的数组，但存在非该类型项：" + hePaiPaixing;
+			return hePaiPaixing;
 		});
-		this.hePaiPaixingList = hePaiPaixingList;
 	}
 }

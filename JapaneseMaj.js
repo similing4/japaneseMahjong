@@ -1,9 +1,11 @@
-import state from "./bean/State.js";
+import State from "./bean/State.js";
 import Pai from "./bean/Pai.js";
 import Parser from "./core/Parser.js";
 
 class JapaneseMaj {
+	state; //全局状态
 	constructor(config) {
+		this.state = new State();
 		state.changFeng = config.changFeng; // Number类型，东风场为1，南风场为2，西风场为3，北风场为4
 		state.ziFeng = config.ziFeng; // Number类型，自风，东1南2西3北4
 		state.dora = config.dora; //Array[Pai]类型，宝牌数组，注意这里是宝牌数组不是宝牌指示牌数组

@@ -86,7 +86,6 @@
  */
 import Pai from "./Pai.js"
 import Mianzi from "./Mianzi.js";
-import state from "./State.js";
 const HePaiType = { //和牌种类
 	MianZiShou: "MianZiShou", //面子手类型和牌
 	QiDuiZi: "QiDuiZi", //七对子类型和牌

@@ -12,5 +12,4 @@ class State {
 	isTianHe = false; //是否是天和
 	isDiHe = false; //是否是地和
 }
-var state = new State();
-export default state;
+export default State;
