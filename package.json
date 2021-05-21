@@ -4,7 +4,7 @@
   "description": "test",
   "main": "JapaneseMaj.js",
   "scripts": {
-    "main": "babel-node JapaneseMaj.js"
+    "main": "babel-node test.js"
   },
   "repository": {
     "type": "git",

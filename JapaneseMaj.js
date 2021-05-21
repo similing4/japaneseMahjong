@@ -1,8 +1,6 @@
 import state from "./bean/State.js";
 import Pai from "./bean/Pai.js";
-import QiDuiZiParser from "./core/QiDuiZiParser.js";
-import Paixing from "./bean/Paixing.js";
-import Mianzi from "./bean/Mianzi.js";
+import Parser from "./core/Parser.js";
 
 class JapaneseMaj {
 	constructor(config) {
@@ -19,27 +17,14 @@ class JapaneseMaj {
 		state.isTianHe = config.isTianHe; //是否是天和
 		state.isDiHe = config.isDiHe; //是否是地和
 	}
-	calc(obj){
-		var parser = new QiDuiZiParser(obj.hand);
-		var ret = parser.calcXiangting();
-		console.log(ret);
+	calcXiangting(obj){
+		return new Parser(obj).calcXiangting();
+	}
+	isHele(obj){
+		return this.getYakuCalculator(obj);
+	}
+	getYakuCalculator(obj){
+		return new Parser(obj).getYakuCalculator();
 	}
 }
-function main(config,obj){
-	var m = new JapaneseMaj(config);
-	return m.calc(obj);
-};
-main({
-	changFeng: 1,
-	ziFeng: 1,
-	dora: [new Pai("Wanzi", 1)],
-	lidora: [new Pai("Wanzi", 1)],
-	isLiZhi: false,
-	isYiFa: false,
-	isLingShang: false,
-	isZimo: false,
-	isLast: false,
-	isQiangGang: false,
-	isTianHe: false,
-	isDiHe: false
-}, Paixing.parseFromString("11m33m55m66m11s227s"));
+export default JapaneseMaj;

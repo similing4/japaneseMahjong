@@ -68,29 +68,29 @@ class QiDuiZiParser {
 		var single = []; //单张
 		var multi = []; //多张
 		var nohave = []; //没有的牌
-		hand.map((count,pai_real_ascii)=>{
-			if(count > 0)
-				kind ++;
+		hand.map((count, pai_real_ascii) => {
+			if (count > 0)
+				kind++;
 			else
 				nohave.push(Pai.fromRealAscii(pai_real_ascii));
-			if(count > 1)
-				pair ++;
-			if(count > 2)
+			if (count > 1)
+				pair++;
+			if (count > 2)
 				multi.push(Pai.fromRealAscii(pai_real_ascii));
-			if(count == 1)
+			if (count == 1)
 				single.push(Pai.fromRealAscii(pai_real_ascii));
 		});
 		var ret = {};
 		var youxiaopai = [];
 		var wuxiaopai = [];
 		ret.xiangTingCount = Math.max(7 - pair + Math.max(7 - kind, 0) - 1, 0);
-		if(kind <= 7){ //不足7种牌
+		if (kind <= 7) { //不足7种牌
 			wuxiaopai = multi; //多的刻子肯定是无效牌
-			if(single.length == 0 && kind != 7) //没有落单的牌且没和牌
+			if (single.length == 0 && kind != 7) //没有落单的牌且没和牌
 				youxiaopai = nohave;
 			else
 				youxiaopai = single;
-		}else if(kind > 7){
+		} else if (kind > 7) {
 			youxiaopai = single; //有效牌肯定是单张牌
 			wuxiaopai = single.concat(multi); //多的刻子和单张都是无效牌
 		}
@@ -122,9 +122,36 @@ class QiDuiZiParser {
 		this.paiList.map((pai) => {
 			hand[pai.pai_real_ascii]++;
 		});
-		return hand.filter((count)=>{ //数字只有2或者0就是七对子和牌
+		return hand.filter((count) => { //数字只有2或者0就是七对子和牌
 			return count != 2 && count != 0;
 		}).length == 0
+	}
+	/*
+	 * 获取七对子和牌的七个对子
+	 * 参数：
+	 * 无
+	 * 返回值
+	 * 和牌了返回List<Pai>类型的长度为7的对子牌，否则返回false
+	 */
+	getDuiZiList() {
+		if (!this.isHepai())
+			return false;
+		var hand = [
+			0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0
+		];
+		this.paiList.map((pai) => {
+			hand[pai.pai_real_ascii]++;
+		});
+		return hand.map((count, pai_real_ascii) => {
+			return [count == 2, Pai.fromRealAscii(pai_real_ascii)];
+		}).filter((item) => {
+			return item[0];
+		}).map((item) => {
+			return item[1];
+		});
 	}
 }
 export default QiDuiZiParser;
