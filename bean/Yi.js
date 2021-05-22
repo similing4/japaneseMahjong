@@ -44,4 +44,13 @@ export default class Yi {
 		else
 			this.fan = fan;
 	}
+	/*
+		判断和牌牌型是否有当前役，本方法应由所有子类实现
+		参数：
+		hePaiPaixing：HePaiPaixing类型，和牌牌型
+		state：State类型，状态对象
+		返回值：
+		有当前役返回该牌型具有的役的对象数组，否则返回空数组
+	*/
+	static getCurrentYi(hePaiPaixing,state){}
 };
