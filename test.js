@@ -10,6 +10,7 @@ main({
 	ziFeng: 1,
 	dora: [new Pai("Wanzi", 1)],
 	lidora: [new Pai("Wanzi", 1)],
+	isLiangLiZhi: false,
 	isLiZhi: false,
 	isYiFa: false,
 	isLingShang: false,

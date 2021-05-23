@@ -25,7 +25,7 @@ export default class DaSiXi extends Yi {
 	static getCurrentYi(hePaiPaixing,state){
 		if(!hePaiPaixing.isMianZiShou())
 			return []; //面子手和牌牌型才有可能大四喜
-		if(hePaiPaixing.getAllMianiz().filter((mianzi)=>{
+		if(hePaiPaixing.getAllMianzi().filter((mianzi)=>{
 			 return mianzi.basePai.isFengPai() && mianzi.isKezi();
 		}).length == 4) //风牌刻子有四个
 			return [new DaSiXi()];

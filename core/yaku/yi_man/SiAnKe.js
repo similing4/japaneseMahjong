@@ -24,6 +24,10 @@ export default class SiAnKe extends Yi {
 			return []; //面子手和牌牌型才有可能四暗刻
 		if(!hePaiPaixing.isMenQianQing())
 			return []; //四暗刻需门前清
+		var all = hePaiPaixing.getAllMianzi();
+		for(var i in all)
+			if(!all[i].isKezi())
+				return []; //要求全是刻子
 		if(hePaiPaixing.hepaiMianziIndex == -1) //雀头和牌四暗刻单骑
 			return [new SiAnKe()];
 		if(state.isZimo) //自摸四暗刻

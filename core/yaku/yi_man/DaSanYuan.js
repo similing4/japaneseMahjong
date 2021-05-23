@@ -22,7 +22,7 @@ export default class DaSanYuan extends Yi {
 	static getCurrentYi(hePaiPaixing,state){
 		if(!hePaiPaixing.isMianZiShou())
 			return []; //只有面子手有大三元
-		var mianziList = hePaiPaixing.getAllMianiz(); //拿到所有面子
+		var mianziList = hePaiPaixing.getAllMianzi(); //拿到所有面子
 		var sanyuan = 0;
 		for(var i in mianziList)
 			if(mianziList[i].isKezi() && mianziList[i].basePai.isSanyuanPai())

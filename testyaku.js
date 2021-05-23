@@ -1,4 +1,4 @@
-import ChunQuanDaiYaoJiu from "./core/yaku/pu_tong_yi/ChunQuanDaiYaoJiu.js"; //大三元
+import YiBeiKou from "./core/yaku/pu_tong_yi/YiBeiKou.js"; //大三元
 import Paixing from "./bean/Paixing.js";
 import JapaneseMaj from "./JapaneseMaj.js";
 import Pai from "./bean/Pai.js";
@@ -8,6 +8,7 @@ var m = new JapaneseMaj({
 	ziFeng: 1,
 	dora: [new Pai("Wanzi", 1)],
 	lidora: [new Pai("Wanzi", 1)],
+	isLiangLiZhi: false,
 	isLiZhi: false,
 	isYiFa: false,
 	isLingShang: false,
@@ -17,8 +18,8 @@ var m = new JapaneseMaj({
 	isTianHe: false,
 	isDiHe: false
 });
-var paixing = m.isHele(Paixing.parseFromString("111999s99p123s123m"));
+var paixing = m.isHele(Paixing.parseFromString("233445m345s45677p"));
 var hePaiPaixingList = paixing.hePaiPaixingList;
 hePaiPaixingList.map((hePaiPaixing)=>{
-	console.log(ChunQuanDaiYaoJiu.getCurrentYi(hePaiPaixing, m.state));
+	console.log(YiBeiKou.getCurrentYi(hePaiPaixing, m.state));
 });

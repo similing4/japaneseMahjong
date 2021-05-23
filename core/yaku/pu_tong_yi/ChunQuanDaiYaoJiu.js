@@ -27,7 +27,7 @@ export default class ChunQuanDaiYaoJiu extends Yi {
 			return []; //只有面子手有纯全带幺九
 		if(!hePaiPaixing.header.isLaotouPai())
 			return []; //雀头必须是老头牌
-		var mianziList = hePaiPaixing.getAllMianiz(); //拿到所有面子
+		var mianziList = hePaiPaixing.getAllMianzi(); //拿到所有面子
 		for(var i in mianziList)
 			if(mianziList[i].getPaiList().filter((pai)=>{
 				return pai.isLaotouPai();

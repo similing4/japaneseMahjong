@@ -22,7 +22,7 @@ export default class SiGangZi extends Yi {
 	static getCurrentYi(hePaiPaixing,state){
 		if(!hePaiPaixing.isMianZiShou())
 			return []; //面子手和牌牌型才有可能四杠子
-		if(hePaiPaixing.getAllMianiz().filter((mianzi)=>{
+		if(hePaiPaixing.getAllMianzi().filter((mianzi)=>{
 			return mianzi.isGangzi();
 		}).length == 4) //杠子有四个
 			return [new SiGangZi()];

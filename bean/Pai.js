@@ -138,6 +138,20 @@ export default class Pai {
 	}
 
 	/*
+		判断牌是否是役牌
+		参数：
+		state：State对象
+		返回值：
+		是役牌时返回true，否则返回false
+	*/
+	isYiPai(state) {
+		if(!this.isZiPai()) //役牌是字牌
+			return false;
+		if(this.isSanyuanPai()) //三元牌一定是役牌
+			return true;
+		return state.changFeng == this.getPaiAscii() || state.ziFeng == this.getPaiAscii();
+	}
+	/*
 		获取牌的数值
 		参数：
 		无

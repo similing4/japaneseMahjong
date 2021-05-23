@@ -240,7 +240,7 @@ export default class HePaiPaixing {
 		返回值：
 		手牌中的面子与副露中的面子组成的数组
 	*/
-	getAllMianiz(){
+	getAllMianzi(){
 		return this.hand.concat(this.fulu);
 	}
 }
