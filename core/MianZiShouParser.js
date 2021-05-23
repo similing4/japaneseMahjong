@@ -189,11 +189,11 @@ class MianZiShouParser {
 			if (sePai.reduce((a, b) => { return a + b; }) > 0) { //有该种色牌的情况下
 				sePai.map((paiCount, index) => {
 					if (paiCount == 0) { //当前张没有牌
-						if (index > 0 && wanzi[index - 1] > 0) //上张有牌这张没有，说明断续了，计入01
+						if (index > 0 && sePai[index - 1] > 0) //上张有牌这张没有，说明断续了，计入01
 							chunkArr.push("01");
 						return;
 					}
-					if (index > 0 && wanzi[index - 1] > 0) //上张有牌这张也有，说明连续了，计入0
+					if (index > 0 && sePai[index - 1] > 0) //上张有牌这张也有，说明连续了，计入0
 						chunkArr.push("0");
 					paiArr.push(new Pai(sePaiTypeArr[sePaiIndex], index + 1));
 					chunkArr.push(Array(paiCount * 2 - 1).join("1")); //需要计入2n-2个1，1张即0个1

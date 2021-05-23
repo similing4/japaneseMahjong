@@ -29,7 +29,8 @@
 	 	fulu: [
 	 		new Mianzi("Shunzi",false,new Pai("Wanzi",6)),
 	 		new Mianzi("Shunzi",false,new Pai("Wanzi",6))
-	 	]
+	 	],
+	 	hepaiMianziIndex: -1
 	});
  *  七对子和牌牌型使用方法：
  *  var paixing = new HePaiPaixing({
@@ -99,7 +100,7 @@ export default class HePaiPaixing {
 	hand; // List<Mianzi>类型，存储手牌的数据，当且仅当type为HePaiType.MianZiShou时有效
 	fulu; // List<Mianzi>类型，存储副露区的数据，当且仅当type为HePaiType.MianZiShou时有效
 	duiziList; //List<Pai>类型，对子的列表，当且仅当type为HePaiType.QiDuiZi时有效
-
+	hepaiMianziIndex; //Number类型，标识哪个面子是和牌的面子，当且仅当type为HePaiType.MianZiShou时有效。当雀头和牌时该值为-1
 	/*
 		构造方法
 		参数：
@@ -112,6 +113,7 @@ export default class HePaiPaixing {
 				header：Pai类型，雀头
 				hand：List<Mianzi>类型，手牌的面子
 				fulu：List<Mianzi>类型，副露区的面子
+				hepaiMianziIndex：Number类型，和了牌所在和牌的面子的下标，雀头和牌时为-1
 			七对子和牌时需额外传入如下参数：
 	 			duiziList：List<Pai>类型，对子的列表
 	 		国士和牌牌型无需传入更多参数。
@@ -143,9 +145,16 @@ export default class HePaiPaixing {
 				throw "手牌面子数*3+副露面子数*3+雀头2张应为14张，请检查传入参数是否正确";
 			if (obj.paiList.length + obj.fulu.length * 3 != 14)
 				throw "手牌数+副露面子数*3张应为14张，请检查传入参数是否正确";
+			if(obj.hepaiMianziIndex != -1){
+				if(obj.hepaiMianziIndex < 0)
+					throw "和牌的面子下标不合法：" + obj.hepaiMianziIndex;
+				if(obj.hepaiMianziIndex > obj.hand.length - 1)
+					throw "和牌的面子下标不合法：" + obj.hepaiMianziIndex;
+			}
 			this.header = obj.header;
 			this.hand = obj.hand;
 			this.fulu = obj.fulu;
+			this.hepaiMianziIndex = obj.hepaiMianziIndex;
 		}else if(obj.type == HePaiType.QiDuiZi){
 			if(obj.duiziList.length != 7)
 				throw "七对子的duiziList长度（对子数）应为7张，请检查传入参数是否正确";
@@ -155,5 +164,83 @@ export default class HePaiPaixing {
 			});
 			this.duiziList = obj.duiziList;
 		}
+	}
+
+	/*
+		获取和牌牌型所有牌
+		参数：
+		无
+		返回值：
+		所有Pai对象的数组
+	*/
+	getPaiList(){
+		switch(this.type){
+			case HePaiType.MianZiShou:
+				var ret = [];
+				this.fulu.map((mianzi)=>{
+					ret = ret.concat(mianzi.getPaiList());
+				})
+				ret = ret.concat(this.paiList);
+				return ret;
+			case HePaiType.QiDuiZi:
+			case HePaiType.GuoShiWuShuang:
+				return this.paiList; //国士无双与七对子都要求门前清，因此直接返回手牌即可
+		}
+		return [];
+	}
+
+	/*
+		是否是门前清
+		参数：
+		无
+		返回值：
+		门前清返回true，否则返回false
+	*/
+	isMenQianQing(){
+		for(var i in this.fulu)
+			if(this.fulu[i].isFulu)
+				return false;
+		return true;
+	}
+
+	/*
+		是否是面子手和牌
+		参数：
+		无
+		返回值：
+		面子手和牌返回true，否则返回false
+	*/
+	isMianZiShou(){
+		return this.type == HePaiType.MianZiShou;
+	}
+	/*
+		是否是七对子和牌
+		参数：
+		无
+		返回值：
+		七对子和牌返回true，否则返回false
+	*/
+	isQiDuiZi(){
+		return this.type == HePaiType.QiDuiZi;
+	}
+	/*
+		是否是国士无双和牌
+		参数：
+		无
+		返回值：
+		国士无双和牌返回true，否则返回false
+	*/
+	isGuoShiWuShuang(){
+		return this.type == HePaiType.GuoShiWuShuang;
+	}
+	/*
+		获取全部面子
+		参数：
+		无
+		返回值：
+		手牌中的面子与副露中的面子组成的数组
+	*/
+	getAllMianiz(){
+		return this.hand.concat(this.fulu);
 	}
 }

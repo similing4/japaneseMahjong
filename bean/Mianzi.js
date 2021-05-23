@@ -57,7 +57,7 @@ export default class Mianzi {
 		是杠子时返回true，否则返回false
 	*/
 	isGangzi(){
-		return this.type == MianziTypeHash.Kezi || this.type == MianziTypeHash.Gangzi;
+		return this.type == MianziTypeHash.Gangzi;
 	}
 	/*
 		判断该面子是否是顺子
@@ -70,15 +70,34 @@ export default class Mianzi {
 		return this.type == MianziTypeHash.Shunzi;
 	}
 	/*
-		判断该面子是否是暗刻
+		获取对应的所有牌
 		参数：
 		无
 		返回值：
-		是暗刻时返回true，否则返回false
+		Pai对象的数组
 	*/
-	isAnke(){
-		if(this.type == MianziTypeHash.Shunzi)
-			return false;
-		return !this.isFulu;
+	getPaiList(){
+		switch(this.type){
+			case MianziTypeHash.Shunzi:
+				return [
+					Pai.fromRealAscii(this.basePai.pai_real_ascii),
+					Pai.fromRealAscii(this.basePai.pai_real_ascii + 1),
+					Pai.fromRealAscii(this.basePai.pai_real_ascii + 2)
+				];
+			case MianziTypeHash.Kezi:
+				return [
+					Pai.fromRealAscii(this.basePai.pai_real_ascii),
+					Pai.fromRealAscii(this.basePai.pai_real_ascii),
+					Pai.fromRealAscii(this.basePai.pai_real_ascii)
+				];
+			case MianziTypeHash.Gangzi:
+				return [
+					Pai.fromRealAscii(this.basePai.pai_real_ascii),
+					Pai.fromRealAscii(this.basePai.pai_real_ascii),
+					Pai.fromRealAscii(this.basePai.pai_real_ascii),
+					Pai.fromRealAscii(this.basePai.pai_real_ascii)
+				];
+		}
+		return [];
 	}
 }
