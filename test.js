@@ -1,24 +1,10 @@
-import Paixing from "./bean/Paixing.js";
-import JapaneseMaj from "./JapaneseMaj.js";
-import Pai from "./bean/Pai.js";
-function main(config,obj){
-	var m = new JapaneseMaj(config);
-	var res = m.isHele(obj);
-	if(res)
-		console.log(res.calcYaku(m.state))
-};
-main({
-	changFeng: 1,
-	ziFeng: 1,
-	dora: [new Pai("Wanzi", 1)],
-	lidora: [new Pai("Wanzi", 1)],
-	isLiangLiZhi: false,
-	isLiZhi: false,
-	isYiFa: false,
-	isLingShang: false,
-	isZimo: false,
-	isLast: false,
-	isQiangGang: false,
-	isTianHe: false,
-	isDiHe: false
-}, Paixing.parseFromString("22334455667788m"));
+//测试用例：计算22334455667788万的役种和番、符数。
+import JapaneseMaj from "./src/JapaneseMaj.js";
+var maj = new JapaneseMaj({
+	dora: [JapaneseMaj.getPai("Wanzi",1)]
+});
+var paixing = JapaneseMaj.getPaixingFromString("22334455667788m");
+var res = maj.getYakuCalculator(paixing);
+if(res)
+	console.log(res.calcYaku(maj.state));
+console.log(maj.calcXiangting(paixing));

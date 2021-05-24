@@ -3,7 +3,7 @@ class State {
 	ziFeng = 1; // Number类型，自风，东1南2西3北4
 	dora = []; //Array[Pai]类型，宝牌数组，注意这里是宝牌数组不是宝牌指示牌数组
 	lidora = []; //Array[Pai]类型，里宝牌数组，注意这里是里宝牌数组不是里宝牌指示牌数组
-	isLiangLiZhi = false; //是否立直
+	isLiangLiZhi = false; //是否两立直
 	isLiZhi = false; //是否立直
 	isYiFa = false; //是否一发
 	isLingShang = false; //是否领上

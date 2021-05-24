@@ -1,11 +1,13 @@
 {
-  "name": "japanese_maj_js",
+  "name": "xinyumaj",
   "version": "1.0.0",
   "description": "test",
-  "main": "JapaneseMaj.js",
+  "main": "index.js",
   "scripts": {
-    "main": "babel-node test.js",
-    "test": "babel-node testyaku.js"
+    "test": "babel-node test.js",
+    "cleanLib": "./node_modules/.bin/rimraf lib",
+    "bableBuild": "./node_modules/.bin/babel src --out-dir lib",
+    "prepublish": "npm run cleanLib && npm run bableBuild"
   },
   "repository": {
     "type": "git",
@@ -14,7 +16,14 @@
   "keywords": [
     "japanese",
     "maj",
-    "js"
+    "js",
+    "日麻",
+    "日本麻将",
+    "役种",
+    "番数",
+    "符数",
+    "向听数",
+    "计算"
   ],
   "author": "similing4",
   "license": "GPL-3.0-or-later",
@@ -25,7 +34,8 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-preset-es2015": "^6.24.1"
+    "babel-preset-es2015": "^6.24.1",
+    "rimraf": "^3.0.2"
   },
   "dependencies": {
     "fastbitset": "^0.4.0"

@@ -2,22 +2,7 @@
  *	牌型解析类
  *	用于和牌向听数及和牌拆解的解析
  *	使用方法：
- *	var parser = new Parser([
- 		new Pai("Wanzi",1),
- 		new Pai("Wanzi",1),
- 		new Pai("Tongzi",1),
- 		new Pai("Tongzi",1),
- 		new Pai("Suozi",1),
- 		new Pai("Suozi",1),
- 		new Pai("Feng",1),
- 		new Pai("Feng",1),
- 		new Pai("Feng",4),
- 		new Pai("Feng",4),
- 		new Pai("Sanyuan",2),
- 		new Pai("Sanyuan",2),
- 		new Pai("Sanyuan",3),
- 		new Pai("Sanyuan",3),
- 	]);
+ *	var parser = new Parser(new Paixing(...));
  *	对象方法详见注释
  */
 
