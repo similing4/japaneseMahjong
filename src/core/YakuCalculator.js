@@ -128,7 +128,7 @@ export default class YakuCalculator {
 
 			var fan = 0;
 			if (yaku.length > 0)
-				yaku.map((yaku) => {
+				fan = yaku.map((yaku) => {
 					return yaku.fan;
 				}).reduce((c, d) => {
 					return c + d;
