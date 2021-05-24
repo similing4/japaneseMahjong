@@ -10,6 +10,20 @@ npm i xinyumaj
 
 ## 使用
 
+### 引入
+
+使用import方式引入：
+
+```
+import JapaneseMaj from "xinyumaj";
+```
+
+使用require方式引入：
+
+```
+const JapaneseMaj = require("xinyumaj").default;
+```
+
 ### 配置相关
 
 ```
@@ -34,7 +48,6 @@ npm i xinyumaj
 
 ```
 //计算22334455667788万的役种和番、符数。
-import JapaneseMaj from "xinyumaj";
 var maj = new JapaneseMaj({
 	dora: [JapaneseMaj.getPai("Wanzi",1)] //这里设置配置相关的参数
 });
@@ -48,7 +61,6 @@ if(res) //如果没和牌会返回false
 
 ```
 //计算1112222456778万的何切。
-import JapaneseMaj from "xinyumaj";
 var maj = new JapaneseMaj({
 	dora: [JapaneseMaj.getPai("Wanzi",1)] //这里设置配置相关的参数
 });
