@@ -1,4 +1,4 @@
-import YiBeiKou from "./core/yaku/pu_tong_yi/YiBeiKou.js"; //大三元
+import YiQiTongGuan from "./core/yaku/pu_tong_yi/YiQiTongGuan.js"; //大三元
 import Paixing from "./bean/Paixing.js";
 import JapaneseMaj from "./JapaneseMaj.js";
 import Pai from "./bean/Pai.js";
@@ -18,8 +18,8 @@ var m = new JapaneseMaj({
 	isTianHe: false,
 	isDiHe: false
 });
-var paixing = m.isHele(Paixing.parseFromString("233445m345s45677p"));
+var paixing = m.isHele(Paixing.parseFromString("11123456789999p"));
 var hePaiPaixingList = paixing.hePaiPaixingList;
 hePaiPaixingList.map((hePaiPaixing)=>{
-	console.log(YiBeiKou.getCurrentYi(hePaiPaixing, m.state));
+	console.log(YiQiTongGuan.getCurrentYi(hePaiPaixing, m.state));
 });
