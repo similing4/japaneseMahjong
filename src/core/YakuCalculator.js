@@ -70,7 +70,7 @@ export default class YakuCalculator {
 				return c + d;
 			});
 			var fu = this.hePaiPaixingList[i].getFu(state);
-			var point = YakuCalculator.calcPoint(fan,fu,state);
+			var point = YakuCalculator.calcPoint(fan,fu.fu,state);
 			test.push({
 				yaku: yaku,
 				paixing: this.hePaiPaixingList[i],

@@ -152,6 +152,18 @@ export default class Pai {
 		return state.changFeng == this.getPaiAscii() || state.ziFeng == this.getPaiAscii();
 	}
 	/*
+		判断牌是否是连风牌
+		参数：
+		state：State对象
+		返回值：
+		是连风牌时返回true，否则返回false
+	*/
+	isLianFengPai(state) {
+		if(!this.isFengPai()) //役牌是字牌
+			return false;
+		return state.changFeng == this.getPaiAscii() && state.ziFeng == this.getPaiAscii();
+	}
+	/*
 		获取牌的数值
 		参数：
 		无
