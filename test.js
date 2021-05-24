@@ -3,7 +3,9 @@ import JapaneseMaj from "./JapaneseMaj.js";
 import Pai from "./bean/Pai.js";
 function main(config,obj){
 	var m = new JapaneseMaj(config);
-	console.log(m.isHele(obj));
+	var res = m.isHele(obj);
+	if(res)
+		console.log(res.calcYaku(m.state))
 };
 main({
 	changFeng: 1,

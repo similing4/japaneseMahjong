@@ -34,7 +34,7 @@ import HePaiPaixing from "../../bean/HePaiPaixing.js";
 import State from "../../bean/State.js";
 import _calcLiangBeiYiMan from "./_calcLiangBeiYiMan.js";
 import _calcPuTongYi from "./_calcPuTongYi.js";
-import _calcYiMan from "./__calcYiMan.js";
+import _calcYiMan from "./_calcYiMan.js";
 
 export default (hePaiPaixing,state)=>{
 	if(!(state instanceof State))
@@ -47,5 +47,13 @@ export default (hePaiPaixing,state)=>{
 	}else{
 		ret = _calcPuTongYi(hePaiPaixing,state);
 	}
-	return ret;
+	var finalret = ret.slice(0); //处理冲突，复制一份待处理
+	for(var i in ret){
+		ret[i].chongTu.map((yiClass)=>{ //遍历冲突的役
+			finalret = finalret.filter((yi)=>{ //清理掉是这种役的项
+				return !(yi instanceof yiClass);
+			});
+		});
+	}
+	return finalret;
 };

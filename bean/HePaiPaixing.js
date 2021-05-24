@@ -145,21 +145,21 @@ export default class HePaiPaixing {
 				throw "手牌面子数*3+副露面子数*3+雀头2张应为14张，请检查传入参数是否正确";
 			if (obj.paiList.length + obj.fulu.length * 3 != 14)
 				throw "手牌数+副露面子数*3张应为14张，请检查传入参数是否正确";
-			if(obj.hepaiMianziIndex != -1){
-				if(obj.hepaiMianziIndex < 0)
+			if (obj.hepaiMianziIndex != -1) {
+				if (obj.hepaiMianziIndex < 0)
 					throw "和牌的面子下标不合法：" + obj.hepaiMianziIndex;
-				if(obj.hepaiMianziIndex > obj.hand.length - 1)
+				if (obj.hepaiMianziIndex > obj.hand.length - 1)
 					throw "和牌的面子下标不合法：" + obj.hepaiMianziIndex;
 			}
 			this.header = obj.header;
 			this.hand = obj.hand;
 			this.fulu = obj.fulu;
 			this.hepaiMianziIndex = obj.hepaiMianziIndex;
-		}else if(obj.type == HePaiType.QiDuiZi){
-			if(obj.duiziList.length != 7)
+		} else if (obj.type == HePaiType.QiDuiZi) {
+			if (obj.duiziList.length != 7)
 				throw "七对子的duiziList长度（对子数）应为7张，请检查传入参数是否正确";
 			obj.duiziList.map((pai) => {
-				if(!(pai instanceof Pai))
+				if (!(pai instanceof Pai))
 					throw "对子数组duiziList应为Pai类型的数组，但存在非该类型项：" + pai;
 			});
 			this.duiziList = obj.duiziList;
@@ -173,11 +173,11 @@ export default class HePaiPaixing {
 		返回值：
 		所有Pai对象的数组
 	*/
-	getPaiList(){
-		switch(this.type){
+	getPaiList() {
+		switch (this.type) {
 			case HePaiType.MianZiShou:
 				var ret = [];
-				this.fulu.map((mianzi)=>{
+				this.fulu.map((mianzi) => {
 					ret = ret.concat(mianzi.getPaiList());
 				})
 				ret = ret.concat(this.paiList);
@@ -196,9 +196,9 @@ export default class HePaiPaixing {
 		返回值：
 		门前清返回true，否则返回false
 	*/
-	isMenQianQing(){
-		for(var i in this.fulu)
-			if(this.fulu[i].isFulu)
+	isMenQianQing() {
+		for (var i in this.fulu)
+			if (this.fulu[i].isFulu)
 				return false;
 		return true;
 	}
@@ -210,7 +210,7 @@ export default class HePaiPaixing {
 		返回值：
 		面子手和牌返回true，否则返回false
 	*/
-	isMianZiShou(){
+	isMianZiShou() {
 		return this.type == HePaiType.MianZiShou;
 	}
 	/*
@@ -220,7 +220,7 @@ export default class HePaiPaixing {
 		返回值：
 		七对子和牌返回true，否则返回false
 	*/
-	isQiDuiZi(){
+	isQiDuiZi() {
 		return this.type == HePaiType.QiDuiZi;
 	}
 	/*
@@ -230,7 +230,7 @@ export default class HePaiPaixing {
 		返回值：
 		国士无双和牌返回true，否则返回false
 	*/
-	isGuoShiWuShuang(){
+	isGuoShiWuShuang() {
 		return this.type == HePaiType.GuoShiWuShuang;
 	}
 	/*
@@ -240,7 +240,96 @@ export default class HePaiPaixing {
 		返回值：
 		手牌中的面子与副露中的面子组成的数组
 	*/
-	getAllMianzi(){
+	getAllMianzi() {
 		return this.hand.concat(this.fulu);
+	}
+	/*
+		计算和牌牌型符数
+		参数：
+		state：State类型
+		返回值：
+		牌型符数对象。
+		例：
+		{
+			fu: 30,
+			fu_real: 24,
+			fuList: ["底符20符","明刻4符{{0}}"]
+		}
+	*/
+	getFu(state) {
+		if (this.type == HePaiType.GuoShiWuShuang)
+			return {
+				fu: 25,
+				fu_real: 25,
+				fuList: ["国士无双固定25符"]
+			};
+		if (this.type == HePaiType.QiDuiZi)
+			return {
+				fu: 25,
+				fu_real: 25,
+				fuList: ["七对子固定25符"]
+			};
+		var ret = {
+			fu: 20, //底符
+			fuList: []
+		};
+		ret.fuList.push("底符20符");
+		this.getAllMianzi().map((mianzi, currIndex) => {
+			if (mianzi.type == "Kezi") {
+				if (!mianzi.isFulu) { //手牌暗刻
+					if (currIndex == this.hepaiMianziIndex && !state.isZimo) { //荣和而成的暗刻
+						ret.fuList.push("明刻4符{{" + mianzi.basePai.pai_real_ascii + "}}");
+						ret.fu += 4; //明刻4符
+					} else {
+						ret.fuList.push("暗刻8符{{" + mianzi.basePai.pai_real_ascii + "}}");
+						ret.fu += 8; //暗刻8符
+					}
+				} else { //明刻
+					ret.fuList.push("明刻4符{{" + mianzi.basePai.pai_real_ascii + "}}");
+					ret.fu += 4; //明刻4符
+				}
+			} else if (mianzi.type == "Gangzi") {
+				if (mianzi.isFulu) { //大明杠或加杠
+					ret.fuList.push("明杠16符{{" + mianzi.basePai.pai_real_ascii + "}}");
+					ret.fu += 16; //明杠16符
+				} else { //暗杠
+					ret.fuList.push("暗杠32符{{" + mianzi.basePai.pai_real_ascii + "}}");
+					ret.fu += 32; //暗杠32符
+				}
+			} else if (mianzi.type == "Shunzi") {
+				return; //顺子不计符
+			}
+		});
+		if (this.header.isYiPai(state)) { //雀头役牌2符
+			ret.fuList.push("雀头役牌2符{{" + this.header.pai_real_ascii + "}}");
+			ret.fu += 2;
+		}
+		if (this.hepaiMianziIndex == -1) { //单骑和牌2符
+			ret.fuList.push("单骑和牌2符{{" + this.helepai.pai_real_ascii + "}}");
+			ret.fu += 2;
+		} else {
+			var paiList = this.hand[this.hepaiMianziIndex].getPaiList();
+			if (paiList[1].pai_real_ascii == this.helepai.pai_real_ascii){ //听牌是坎张
+				ret.fuList.push("坎张和牌2符{{" + this.helepai.pai_real_ascii + "}}");
+				ret.fu += 2; //边张或坎张2符
+			}else if (paiList[0].getPaiAscii() == 1 && this.helepai.getPaiAscii() == 3){ //听牌是边张
+				ret.fuList.push("边张和牌2符{{" + this.helepai.pai_real_ascii + "}}");
+				ret.fu += 2; //边张或坎张2符
+			}else if (paiList[2].getPaiAscii() == 9 && this.helepai.getPaiAscii() == 7){ //听牌是边张
+				ret.fuList.push("边张和牌2符{{" + this.helepai.pai_real_ascii + "}}");
+				ret.fu += 2; //边张或坎张2符
+			}
+		}
+		if (!state.isZimo && this.isMenQianQing()) { //门前清荣和10符
+			ret.fu += 10;
+			ret.fuList.push("门前清荣和10符{{" + this.helepai.pai_real_ascii + "}}");
+		}
+		if (state.isZimo) { //门前清自摸2符
+			ret.fu += 2;
+			ret.fuList.push("门前清自摸2符{{" + this.helepai.pai_real_ascii + "}}");
+		}
+		ret.fu_real = ret.fu;
+		ret.fu = Math.ceil(ret.fu / 10) * 10;
+		return ret;
 	}
 }
