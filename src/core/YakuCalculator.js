@@ -53,28 +53,93 @@ export default class YakuCalculator {
 		});
 	}
 	/*
+		计算牌型中包含的宝牌
+		参数：
+			hePaiPaixing：HePaiPaixing对象。
+			state：State类型，全局配置
+		返回值：宝牌及其数量数组：
+			[{
+				count:1,
+				pai:new Pai("Wanzi",1),
+				type:"Dora"
+			},{
+				count:1,
+				pai:new Pai("Wanzi",1),
+				type:"LiDora"
+			}]
+	*/
+	getDora(hePaiPaixing, state) {
+		var ret = [];
+		hePaiPaixing.getPaiList().map((pai) => {
+			var c = pai.getDoraCountNormal(state);
+			if (c > 0)
+				ret.push({
+					count: c,
+					pai: pai,
+					type: "Dora"
+				});
+			c = pai.getDoraCountLi(state);
+			if (c > 0)
+				ret.push({
+					count: c,
+					pai: pai,
+					type: "LiDora"
+				});
+		})
+		return ret;
+	}
+	/*
 		计算役的番符点数
 		参数：
 			hePaiPaixingList：HePaiPaixing对象的数组，需要使用Parser获取或自定义。
 			state：State类型，全局配置
+		返回值示例：
+			[{
+				yaku: [Yi{
+					chongTu: [],
+					isYiMan: false,
+					isLiangBeiYiMan: false,
+					key: 'YiPai',
+					name: '役牌发',
+					fan: 1
+				}], //如果无役此数组为空
+				dora: [{
+					count:1,
+					pai:new Pai("Wanzi",1),
+					type:"Dora"
+				},{
+					count:1,
+					pai:new Pai("Wanzi",1),
+					type:"LiDora"
+				}],
+				paixing: HePaiPaixing{},
+				fan: 3,
+				fu: 110,
+				point: 8000
+			}]
 		错误：
 			当传入数据不合法时报错。
 	*/
 	calcYaku(state) {
 		var test = [];
-		for (var i in this.hePaiPaixingList){
+		for (var i in this.hePaiPaixingList) {
 			var yaku = yakuCalc(this.hePaiPaixingList[i], this.state);
-			var fan = yaku.map((yaku) => {
-				return yaku.fan;
-			}).reduce((c, d) => {
-				return c + d;
-			});
+			var dora = this.getDora(this.hePaiPaixingList[i], state);
+
+			var fan = 0;
+			if (yaku.length > 0)
+				yaku.map((yaku) => {
+					return yaku.fan;
+				}).reduce((c, d) => {
+					return c + d;
+				});
 			var fu = this.hePaiPaixingList[i].getFu(state);
-			var point = YakuCalculator.calcPoint(fan,fu.fu,state);
+			var point = YakuCalculator.calcPoint((fan == 0) ? 0 : (fan + dora.length), fu.fu, state);
 			test.push({
 				yaku: yaku,
+				dora: dora,
 				paixing: this.hePaiPaixingList[i],
-				fan: fan,
+				fan: (fan == 0) ? 0 : (fan + dora.length),
 				fu: fu,
 				point: point
 			});
@@ -92,6 +157,8 @@ export default class YakuCalculator {
 		返回值：和牌点数
 	*/
 	static calcPoint(fan, fu, state) {
+		if(fan == 0)
+			return 0;
 		var fp = (state.ziFeng == 1 ? 6 : 4); //亲家是a*6，闲家是a*4
 		if (fan < 5) {
 			var a = fu * Math.pow(2, fan + 2);
