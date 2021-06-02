@@ -34,6 +34,7 @@ import ChunZhengJiuLianBaoDeng from "./liang_bei_yi_man/ChunZhengJiuLianBaoDeng.
 import SiAnKeDanQi from "./liang_bei_yi_man/SiAnKeDanQi.js"; //四暗刻单骑
 import DaSiXi from "./liang_bei_yi_man/DaSiXi.js"; //大四喜
 import State from "../../bean/State.js";
+import HePaiPaixing from "../../bean/HePaiPaixing.js";
 
 export default (hePaiPaixing, state) => {
 	if (!(state instanceof State))
