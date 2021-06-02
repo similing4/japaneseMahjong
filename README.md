@@ -5,7 +5,7 @@
 ## 安装
 
 ```
-npm i xinyumaj
+npm i shengxinyumaj
 ```
 
 ## 使用
@@ -15,13 +15,13 @@ npm i xinyumaj
 使用import方式引入：
 
 ```
-import JapaneseMaj from "xinyumaj";
+import JapaneseMaj from "shengxinyumaj";
 ```
 
 使用require方式引入：
 
 ```
-const JapaneseMaj = require("xinyumaj").default;
+const JapaneseMaj = require("shengxinyumaj").default;
 ```
 
 ### 配置相关
