@@ -33,6 +33,7 @@ import GuoShiWuShuangShiSanMian from "./liang_bei_yi_man/GuoShiWuShuangShiSanMia
 import ChunZhengJiuLianBaoDeng from "./liang_bei_yi_man/ChunZhengJiuLianBaoDeng.js"; //纯正九莲宝灯
 import SiAnKeDanQi from "./liang_bei_yi_man/SiAnKeDanQi.js"; //四暗刻单骑
 import DaSiXi from "./liang_bei_yi_man/DaSiXi.js"; //大四喜
+import State from "../../bean/State.js";
 
 export default (hePaiPaixing, state) => {
 	if (!(state instanceof State))
