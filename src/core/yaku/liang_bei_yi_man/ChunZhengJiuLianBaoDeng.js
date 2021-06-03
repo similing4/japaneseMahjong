@@ -27,6 +27,8 @@ export default class ChunZhengJiuLianBaoDeng extends Yi {
 		var testHelePai = JiuLianBaoDeng.hasJiuLianBaoDeng(hePaiPaixing);
 		if(!testHelePai)
 			return [];
+		if(state.isTianHe)
+			return [new ChunZhengJiuLianBaoDeng()];
 		if(testHelePai.pai_real_ascii == hePaiPaixing.helepai.pai_real_ascii)
 			return [new ChunZhengJiuLianBaoDeng()];
 		return [];

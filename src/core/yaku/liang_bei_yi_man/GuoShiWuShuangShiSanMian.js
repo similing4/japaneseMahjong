@@ -24,6 +24,8 @@ export default class GuoShiWuShuangShiSanMian extends Yi {
 	*/
 	static getCurrentYi(hePaiPaixing,state){
 		if(hePaiPaixing.isGuoShiWuShuang()){
+			if(state.isTianHe)
+				return [new GuoShiWuShuangShiSanMian()];
 			if(hePaiPaixing.paiList.filter((pai)=>{
 				return pai.pai_real_ascii == hePaiPaixing.helepai.pai_real_ascii
 			}).length == 2)
