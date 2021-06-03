@@ -1,6 +1,6 @@
 {
   "name": "shengxinyumaj",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "用于nodejs环境下的日本麻将点数、番数、符数、役种等计算",
   "main": "index.js",
   "scripts": {
