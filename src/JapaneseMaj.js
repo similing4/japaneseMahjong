@@ -72,6 +72,15 @@ class JapaneseMaj {
 		this.state.isDiHe = config.isDiHe; //是否是地和
 	}
 	/*
+	 *	根据牌编号获取Pai对象
+	 *	参数：
+	 *  pai_real_ascii：牌的编号
+	 *  返回值：对应的Pai对象
+	 */
+	static getPaiFromAscii(pai_real_ascii) {
+		return Pai.fromRealAscii(pai_real_ascii);
+	}
+	/*
 	 *	根据牌类型与牌数字获取Pai对象
 	 *	参数：
 	 *	type：牌的种类，"Wanzi"为万子，"Tongzi"为筒子，"Suozi"为索子，"Feng"为风牌，"Sanyuan"为三元牌
