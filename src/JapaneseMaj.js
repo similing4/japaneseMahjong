@@ -155,5 +155,14 @@ class JapaneseMaj {
 	getYakuCalculator(paixing) {
 		return new Parser(paixing).getYakuCalculator(this.state);
 	}
+	/*
+	 *	反序列化state对象
+	 *	参数：
+	 *  str：State对象的序列化对象
+	 *  返回值：对应的State对象
+	 */
+	static deserializeState(str) {
+		return State.deserialize(str);
+	}
 }
 export default JapaneseMaj;
