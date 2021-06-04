@@ -87,6 +87,23 @@ export default class Pai {
 		return PaiTypeHash.Sanyuan;
 	}
 	/*
+		获取牌的单字母类型
+		参数：
+		无
+		返回值：
+		万子返回m，筒子返回p，索子返回s，字牌返回z
+	*/
+	getTypeSingle() {
+		var v = this.pai_real_ascii;
+		if (v < 9)
+			return "m";
+		if (v < 18)
+			return "p";
+		if (v < 27)
+			return "s";
+		return "z";
+	}
+	/*
 		获取牌的序列化形式
 		参数：
 		无
