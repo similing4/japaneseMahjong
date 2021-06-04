@@ -79,7 +79,7 @@ export default class YakuCalculator {
 					type: "Dora"
 				});
 			c = pai.getDoraCountLi(state);
-			if (c > 0)
+			if (c > 0 && state.isLiZhi)
 				ret.push({
 					count: c,
 					pai: pai,
