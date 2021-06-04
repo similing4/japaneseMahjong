@@ -33,6 +33,7 @@ class State {
 		json.isQiangGang = this.isQiangGang;
 		json.isTianHe = this.isTianHe;
 		json.isDiHe = this.isDiHe;
+		return json;
 	}
 	/*
 		序列化对象
@@ -55,6 +56,7 @@ class State {
 		state.isQiangGang = obj.isQiangGang;
 		state.isTianHe = obj.isTianHe;
 		state.isDiHe = obj.isDiHe;
+		return state;
 	}
 }
 export default State;
