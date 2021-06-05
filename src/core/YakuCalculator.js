@@ -137,7 +137,7 @@ export default class YakuCalculator {
 			var doraFan = 0;
 			for(var j in dora)
 				doraFan += dora[j].count;
-			var point = YakuCalculator.calcPoint((fan == 0) ? 0 : doraFan, fu.fu, state);
+			var point = YakuCalculator.calcPoint((fan == 0) ? 0 : fan + doraFan, fu.fu, state);
 			test.push({
 				yaku: yaku,
 				dora: dora,
