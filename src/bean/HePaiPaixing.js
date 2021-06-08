@@ -363,6 +363,11 @@ export default class HePaiPaixing {
 		}
 		ret.fu_real = ret.fu;
 		ret.fu = Math.ceil(ret.fu / 10) * 10;
+		if(ret.fu == 20 && this.fulu.length > 0){
+			ret.fuList.push("鸣牌平和牌型多计10符");
+			ret.fu = 30;
+			ret.fu_real = 30;
+		}
 		return ret;
 	}
 }
