@@ -35,7 +35,7 @@ export default class YiBeiKou extends Yi {
 		}
 		var val = Object.values(mianziBasePai); //取计数数值，存在2个证明有该役
 		for(var i in val)
-			if(val[i] == 2)
+			if(val[i] >= 2)
 				return [new YiBeiKou()];
 		return [];
 	}
