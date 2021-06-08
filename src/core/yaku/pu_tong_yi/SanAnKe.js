@@ -25,7 +25,7 @@ export default class SanAnKe extends Yi {
 		var kezi = 0;
 		var all = hePaiPaixing.getAllMianzi();
 		for(var i in all)
-			if(all[i].isKezi() && (state.isZimo || i != hePaiPaixing.hepaiMianziIndex))
+			if(all[i].isKezi() && !all[i].isFulu && (state.isZimo || i != hePaiPaixing.hepaiMianziIndex))
 				kezi ++; //要求有三个暗刻
 		if(kezi != 3)
 			return [];

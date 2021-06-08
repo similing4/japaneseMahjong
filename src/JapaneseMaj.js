@@ -45,6 +45,7 @@ class JapaneseMaj {
 			ziFeng: 1,
 			dora: [],
 			lidora: [],
+			beidora: 0,
 			isLiangLiZhi: false,
 			isLiZhi: false,
 			isYiFa: false,
@@ -61,6 +62,7 @@ class JapaneseMaj {
 		this.state.ziFeng = config.ziFeng; // Number类型，自风，东1南2西3北4
 		this.state.dora = config.dora; //Array[Pai]类型，宝牌数组，注意这里是宝牌数组不是宝牌指示牌数组
 		this.state.lidora = config.lidora; //Array[Pai]类型，里宝牌数组，注意这里是里宝牌数组不是里宝牌指示牌数组
+		this.state.beidora = config.beidora; //Number类型，拔北宝牌数量
 		this.state.isLiangLiZhi = config.isLiangLiZhi; //是否两立直
 		this.state.isLiZhi = config.isLiZhi; //是否立直
 		this.state.isYiFa = config.isYiFa; //是否一发

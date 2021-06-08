@@ -4,6 +4,7 @@ class State {
 	ziFeng = 1; // Number类型，自风，东1南2西3北4
 	dora = []; //Array[Pai]类型，宝牌数组，注意这里是宝牌数组不是宝牌指示牌数组
 	lidora = []; //Array[Pai]类型，里宝牌数组，注意这里是里宝牌数组不是里宝牌指示牌数组
+	beidora = 0; //Number类型，拔北宝牌数
 	isLiangLiZhi = false; //是否两立直
 	isLiZhi = false; //是否立直
 	isYiFa = false; //是否一发
@@ -24,6 +25,7 @@ class State {
 		json.ziFeng = this.ziFeng;
 		json.dora = this.dora.map((pai)=>{return pai.pai_real_ascii}).join(",");
 		json.lidora = this.lidora.map((pai)=>{return pai.pai_real_ascii}).join(",");
+		json.beidora = this.beidora;
 		json.isLiangLiZhi = this.isLiangLiZhi;
 		json.isLiZhi = this.isLiZhi;
 		json.isYiFa = this.isYiFa;
@@ -47,6 +49,7 @@ class State {
 		state.ziFeng = obj.ziFeng;
 		state.dora = JSON.parse("["+obj.dora+"]").map((pai_real_ascii)=>{return Pai.fromRealAscii(pai_real_ascii)});
 		state.lidora = JSON.parse("["+obj.lidora+"]").map((pai_real_ascii)=>{return Pai.fromRealAscii(pai_real_ascii)});
+		state.beidora = obj.beidora;
 		state.isLiangLiZhi = obj.isLiangLiZhi;
 		state.isLiZhi = obj.isLiZhi;
 		state.isYiFa = obj.isYiFa;
