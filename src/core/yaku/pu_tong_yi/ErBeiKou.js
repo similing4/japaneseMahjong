@@ -36,9 +36,11 @@ export default class ErBeiKou extends Yi {
 				mianziBasePai[mianziList[i].basePai.pai_real_ascii] = 0;
 			mianziBasePai[mianziList[i].basePai.pai_real_ascii] ++;
 		}
-		var val = Object.values(mianziBasePai); //取计数数值，为2组顺子且每组有两个
-		if(val.length != 2)
+		var val = Object.values(mianziBasePai); //取计数数值，为2组顺子且每组有两个，或1组顺子每组有4个
+		if(val.length > 2)
 			return [];
+		if(val.length == 1)
+			return [new ErBeiKou()];
 		for(var i in val)
 			if(val[i] != 2)
 				return [];
