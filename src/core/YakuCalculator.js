@@ -70,22 +70,52 @@ export default class YakuCalculator {
 	*/
 	getDora(hePaiPaixing, state) {
 		var ret = [];
+		var doraNormal = {};
+		var doraLi = {};
+		var doraRed = {};
 		hePaiPaixing.getPaiList().map((pai) => {
 			var c = pai.getDoraCountNormal(state);
-			if (c > 0)
-				ret.push({
-					count: c,
-					pai: pai,
-					type: "Dora"
-				});
+			if (c > 0){
+				if(!doraNormal[pai.pai_real_ascii + ''])
+					doraNormal[pai.pai_real_ascii + ''] = c;
+				else
+					doraNormal[pai.pai_real_ascii + ''] += c;
+			}
 			c = pai.getDoraCountLi(state);
-			if (c > 0 && state.isLiZhi)
-				ret.push({
-					count: c,
-					pai: pai,
-					type: "LiDora"
-				});
+			if (c > 0 && state.isLiZhi){
+				if(!doraLi[pai.pai_real_ascii + ''])
+					doraLi[pai.pai_real_ascii + ''] = c;
+				else
+					doraLi[pai.pai_real_ascii + ''] += c;
+			}
+			if(pai.isRed){	
+				if(!doraRed[pai.pai_real_ascii + ''])
+					doraRed[pai.pai_real_ascii + ''] = 1;
+				else
+					doraRed[pai.pai_real_ascii + ''] ++;
+			}
 		})
+		Object.keys(doraNormal).map((pai_real_ascii)=>{
+			ret.push({
+				count: doraNormal[pai_real_ascii],
+				pai: Pai.fromRealAscii(parseInt(pai_real_ascii)),
+				type: "Dora"
+			});
+		});
+		Object.keys(doraLi).map((pai_real_ascii)=>{
+			ret.push({
+				count: doraLi[pai_real_ascii],
+				pai: Pai.fromRealAscii(parseInt(pai_real_ascii)),
+				type: "LiDora"
+			});
+		});
+		Object.keys(doraRed).map((pai_real_ascii)=>{
+			ret.push({
+				count: doraRed[pai_real_ascii],
+				pai: Pai.fromRealAscii(parseInt(pai_real_ascii)),
+				type: "RedDora"
+			});
+		});
 		if(state.beidora > 0)
 			ret.push({
 				count: state.beidora,
