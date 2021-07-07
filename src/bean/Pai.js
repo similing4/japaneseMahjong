@@ -113,6 +113,8 @@ export default class Pai {
 	serialize() {
 		var v = this.pai_real_ascii;
 		var c = this.getPaiAscii();
+		if(c == 5 && this.isRed)
+			c = 0;
 		if (v < 9)
 			return c + "m";
 		if (v < 18)
@@ -182,9 +184,9 @@ export default class Pai {
 		是役牌时返回true，否则返回false
 	*/
 	isYiPai(state) {
-		if(!this.isZiPai()) //役牌是字牌
+		if (!this.isZiPai()) //役牌是字牌
 			return false;
-		if(this.isSanyuanPai()) //三元牌一定是役牌
+		if (this.isSanyuanPai()) //三元牌一定是役牌
 			return true;
 		return state.changFeng == this.getPaiAscii() || state.ziFeng == this.getPaiAscii();
 	}
@@ -196,7 +198,7 @@ export default class Pai {
 		是连风牌时返回true，否则返回false
 	*/
 	isLianFengPai(state) {
-		if(!this.isFengPai()) //役牌是字牌
+		if (!this.isFengPai()) //役牌是字牌
 			return false;
 		return state.changFeng == this.getPaiAscii() && state.ziFeng == this.getPaiAscii();
 	}
@@ -309,6 +311,12 @@ export default class Pai {
 		Pai对象
 	*/
 	static fromRealAscii(v) {
+		if (v == 35)
+			return new Pai(PaiTypeHash.Wanzi, 5, true);
+		if (v == 36)
+			return new Pai(PaiTypeHash.Tongzi, 5, true);
+		if (v == 37)
+			return new Pai(PaiTypeHash.Suozi, 5, true);
 		if (v > 33 || v < 0)
 			throw "没有这种牌：" + v;
 		var type;
