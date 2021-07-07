@@ -58,13 +58,13 @@ export default class Paixing {
 		str：天凤麻将牌谱字符串，格式如下：
 			手牌 副露
 		其中手牌部分可由如下几种写法组成：
-			[1-9]m万子 [1-9]p筒子 [1-9]s索子 [1-4]z 东南西北  [5-7]z 白发中
+			[1-9]m万子 [1-9]p筒子 [1-9]s索子 [1-4]z 东南西北  [5-7]z 白发中 0代表赤5
 		副露部分由手牌部分延伸，可由如下几种写法组成：
-			吃：345m（三四五萬顺子） 碰：222z（南风刻子） 明杠：4444z（北风明杠） 暗杠：33333z(西风暗杠)
+			吃：340m（三四红五萬顺子） 碰：222z（南风刻子） 明杠：4444z（北风明杠） 暗杠：33333z(西风暗杠)
 		和牌项请放到【手牌】最后，副露后续不满足输入规则的内容会被忽略。
 		例：手牌四索两个、二三萬，摸来的牌是四萬，副露为东风碰，五六七万吃，9筒暗杠，那么手牌的格式应为：
-			44s23m4m 111z 567m 99999p
 		错误：
+			44s23m4m 111z 567m 99999p
 			输入格式不正确时报错。
 	*/
 	static parseFromString(str) {
@@ -73,7 +73,7 @@ export default class Paixing {
 		var handRet = [];
 		var fulu = [];
 		for (var i = 1; i < data.length; i++) {
-			if (/^[1-9]{3,5}[mpsz]{1}$/.test(data[i]))
+			if (/^[0-9]{3,5}[mpsz]{1}$/.test(data[i]))
 				fulu.push(data[i]);
 		}
 		hand.map((group) => {
@@ -97,6 +97,8 @@ export default class Paixing {
 			num.map((paiAscii) => {
 				paiAscii = parseInt(paiAscii);
 				if (type == "Zipai") {
+					if (paiAscii == 0)
+						throw "不存在z0";
 					if (paiAscii < 5)
 						handRet.push(new Pai("Feng", paiAscii));
 					else if (paiAscii < 8)
@@ -104,24 +106,31 @@ export default class Paixing {
 					else
 						throw "不存在z" + paiAscii;
 				} else {
-					handRet.push(new Pai(type, paiAscii));
+					handRet.push(new Pai(type, paiAscii == 0 ? 5 : paiAscii, paiAscii == 0));
 				}
 			});
 		});
 		fulu = fulu.map((group) => {
 			var match = /(\d+)([mpsz]{1})/.exec(group);
-			var num = match[1].split("").sort();
+			var mianzi = match[1];
+			var redDoraCount = mianzi.split("").filter((t) => {
+				return t == "0";
+			}).length;
+			mianzi = mianzi.replace(/0/g, 5);
+			var num = mianzi.split("").sort();
 			var type = match[2];
 			var paiType;
 			var isPaiFulu = true;
-			if (num.length == 5 && num[0] == num[1] && num[1] == num[2] && num[2] == num[3] && num[3] == num[4]) { //暗杠
+			if (num.length == 5 && num[0] == num[1] && num[1] == num[2] && num[2] == num[3] && num[3] ==
+				num[4]) { //暗杠
 				paiType = "Gangzi";
 				isPaiFulu = false;
 			} else if (num.length == 4 && num[0] == num[1] && num[1] == num[2] && num[2] == num[3]) { //明杠
 				paiType = "Gangzi";
 			} else if (num.length == 3 && num[0] == num[1] && num[1] == num[2]) { //刻子
 				paiType = "Kezi";
-			} else if (parseInt(num[0]) + 1 == parseInt(num[1]) && parseInt(num[2]) - 1 == parseInt(num[1])) { //顺子
+			} else if (parseInt(num[0]) + 1 == parseInt(num[1]) && parseInt(num[2]) - 1 == parseInt(num[
+					1])) { //顺子
 				paiType = "Shunzi";
 			} else {
 				throw "不存在牌型：" + num.join("") + type;
@@ -130,18 +139,21 @@ export default class Paixing {
 				throw "字牌不能有顺子";
 			switch (type) {
 				case "m":
-					return new Mianzi(paiType, isPaiFulu, new Pai("Wanzi", parseInt(num[0])));
+					return new Mianzi(paiType, isPaiFulu, new Pai("Wanzi", parseInt(num[0])), redDoraCount);
 				case "p":
-					return new Mianzi(paiType, isPaiFulu, new Pai("Tongzi", parseInt(num[0])));
+					return new Mianzi(paiType, isPaiFulu, new Pai("Tongzi", parseInt(num[0])),
+					redDoraCount);
 				case "s":
-					return new Mianzi(paiType, isPaiFulu, new Pai("Suozi", parseInt(num[0])));
+					return new Mianzi(paiType, isPaiFulu, new Pai("Suozi", parseInt(num[0])), redDoraCount);
 				case "z":
 					if (parseInt(num[0]) > 7)
 						throw "不存在z" + num[0];
 					else if (parseInt(num[0]) > 4)
-						return new Mianzi(paiType, isPaiFulu, new Pai("Sanyuan", parseInt(num[0]) - 4));
+						return new Mianzi(paiType, isPaiFulu, new Pai("Sanyuan", parseInt(num[0]) - 4),
+							redDoraCount);
 					else
-						return new Mianzi(paiType, isPaiFulu, new Pai("Feng", parseInt(num[0])));
+						return new Mianzi(paiType, isPaiFulu, new Pai("Feng", parseInt(num[0])),
+							redDoraCount);
 					break;
 				default:
 					throw "不存在类型：" + type;

@@ -5,10 +5,10 @@ var maj = new JapaneseMaj({
 	ziFeng: 2, // Number类型，自风，东1南2西3北4
 	isZimo: false,
 	dora: [],
-	beidora: 2
+	beidora: 0
 });
-var paixing = JapaneseMaj.getPaixingFromString("777788889999m11p");
+var paixing = JapaneseMaj.getPaixingFromString("556677m66s 111z 005s");
 var res = maj.getYakuCalculator(paixing);
 if(res)
 	console.log(res.calcYaku(maj.state));
-console.log(maj.calcXiangting(paixing));
+//console.log(maj.calcXiangting(paixing));
