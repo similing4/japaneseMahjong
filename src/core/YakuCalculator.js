@@ -163,8 +163,11 @@ export default class YakuCalculator {
 			var dora = this.getDora(this.hePaiPaixingList[i], state);
 
 			var fan = 0;
+			var isYakuman = false;
 			if (yaku.length > 0)
 				fan = yaku.map((yaku) => {
+					if(yaku.isYiMan || yaku.isLiangBeiYiMan)
+						isYakuman = true;
 					return yaku.fan;
 				}).reduce((c, d) => {
 					return c + d;
@@ -173,13 +176,20 @@ export default class YakuCalculator {
 			var doraFan = 0;
 			for(var j in dora)
 				doraFan += dora[j].count;
-			var point = YakuCalculator.calcPoint((fan == 0) ? 0 : fan + doraFan, fu.fu, state);
+			var finalFan = fan;
+			if(finalFan != 0){
+				if(isYakuman)
+					finalFan = fan;
+				else
+					finalFan = fan + doraFan;
+			}
+			var point = YakuCalculator.calcPoint(finalFan, fu.fu, state);
 			if(state.isZimo)
 				test.push({
 					yaku: yaku,
 					dora: dora,
 					paixing: this.hePaiPaixingList[i],
-					fan: (fan == 0) ? 0 : (fan + doraFan),
+					fan: finalFan,
 					fu: fu,
 					point: point.all,
 					point_qin: point.qin,
@@ -190,7 +200,7 @@ export default class YakuCalculator {
 					yaku: yaku,
 					dora: dora,
 					paixing: this.hePaiPaixingList[i],
-					fan: (fan == 0) ? 0 : (fan + doraFan),
+					fan: finalFan,
 					fu: fu,
 					point: point
 				});
