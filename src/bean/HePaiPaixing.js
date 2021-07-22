@@ -279,45 +279,45 @@ export default class HePaiPaixing {
 			if (mianzi.type == "Kezi") {
 				if (!mianzi.isFulu) { //手牌暗刻
 					if (currIndex == this.hepaiMianziIndex && !state.isZimo) { //荣和而成的刻子
-						if(isYaoJiu){
+						if (isYaoJiu) {
 							ret.fuList.push("幺九明刻4符{{" + mianzi.basePai.pai_real_ascii + "}}");
 							ret.fu += 4; //幺九明刻4符
-						}else{
+						} else {
 							ret.fuList.push("中张明刻2符{{" + mianzi.basePai.pai_real_ascii + "}}");
 							ret.fu += 2; //中张明刻2符
 						}
 					} else {
-						if(isYaoJiu){
+						if (isYaoJiu) {
 							ret.fuList.push("幺九暗刻8符{{" + mianzi.basePai.pai_real_ascii + "}}");
 							ret.fu += 8; //幺九暗刻8符
-						}else{
+						} else {
 							ret.fuList.push("中张暗刻4符{{" + mianzi.basePai.pai_real_ascii + "}}");
 							ret.fu += 4; //中张暗刻4符
 						}
 					}
 				} else { //明刻
-					if(isYaoJiu){
+					if (isYaoJiu) {
 						ret.fuList.push("幺九明刻4符{{" + mianzi.basePai.pai_real_ascii + "}}");
 						ret.fu += 4; //幺九明刻4符
-					}else{
+					} else {
 						ret.fuList.push("中张明刻2符{{" + mianzi.basePai.pai_real_ascii + "}}");
 						ret.fu += 2; //中张明刻2符
 					}
 				}
 			} else if (mianzi.type == "Gangzi") {
 				if (mianzi.isFulu) { //大明杠或加杠
-					if(isYaoJiu){
+					if (isYaoJiu) {
 						ret.fuList.push("幺九明杠16符{{" + mianzi.basePai.pai_real_ascii + "}}");
 						ret.fu += 16; //幺九明杠16符
-					}else{
+					} else {
 						ret.fuList.push("中张明杠8符{{" + mianzi.basePai.pai_real_ascii + "}}");
 						ret.fu += 8; //中张明杠8符
 					}
 				} else { //暗杠
-					if(isYaoJiu){
+					if (isYaoJiu) {
 						ret.fuList.push("幺九暗杠32符{{" + mianzi.basePai.pai_real_ascii + "}}");
 						ret.fu += 32; //幺九暗杠32符
-					}else{
+					} else {
 						ret.fuList.push("中张暗杠16符{{" + mianzi.basePai.pai_real_ascii + "}}");
 						ret.fu += 16; //中张暗杠16符
 					}
@@ -327,10 +327,10 @@ export default class HePaiPaixing {
 			}
 		});
 		if (this.header.isYiPai(state)) { //雀头役牌2符
-			if(!this.header.isLianFengPai(state)){
+			if (!this.header.isLianFengPai(state)) {
 				ret.fuList.push("雀头役牌2符{{" + this.header.pai_real_ascii + "}}");
 				ret.fu += 2;
-			}else{
+			} else {
 				ret.fuList.push("雀头连风牌4符{{" + this.header.pai_real_ascii + "}}");
 				ret.fu += 4;
 			}
@@ -339,31 +339,33 @@ export default class HePaiPaixing {
 			ret.fuList.push("单骑和牌2符{{" + this.helepai.pai_real_ascii + "}}");
 			ret.fu += 2;
 		} else {
-			if(!this.hand[this.hepaiMianziIndex].isKezi()){
+			if (!this.hand[this.hepaiMianziIndex].isKezi()) {
 				var paiList = this.hand[this.hepaiMianziIndex].getPaiList();
-				if (paiList[1].pai_real_ascii == this.helepai.pai_real_ascii){ //听牌是坎张
+				if (paiList[1].pai_real_ascii == this.helepai.pai_real_ascii) { //听牌是坎张
 					ret.fuList.push("坎张和牌2符{{" + this.helepai.pai_real_ascii + "}}");
 					ret.fu += 2; //边张或坎张2符
-				}else if (paiList[0].getPaiAscii() == 1 && this.helepai.getPaiAscii() == 3){ //听牌是边张
+				} else if (paiList[0].getPaiAscii() == 1 && this.helepai.getPaiAscii() == 3) { //听牌是边张
 					ret.fuList.push("边张和牌2符{{" + this.helepai.pai_real_ascii + "}}");
 					ret.fu += 2; //边张或坎张2符
-				}else if (paiList[2].getPaiAscii() == 9 && this.helepai.getPaiAscii() == 7){ //听牌是边张
+				} else if (paiList[2].getPaiAscii() == 9 && this.helepai.getPaiAscii() == 7) { //听牌是边张
 					ret.fuList.push("边张和牌2符{{" + this.helepai.pai_real_ascii + "}}");
 					ret.fu += 2; //边张或坎张2符
 				}
 			}
 		}
-		if (!state.isZimo && this.isMenQianQing()) { //门前清荣和10符
-			ret.fu += 10;
-			ret.fuList.push("门前清荣和10符{{" + this.helepai.pai_real_ascii + "}}");
-		}
-		if (state.isZimo) { //门前清自摸2符
-			ret.fu += 2;
-			ret.fuList.push("门前清自摸2符{{" + this.helepai.pai_real_ascii + "}}");
+		if (ret.fu > 20) { //非平和牌型才计门前清自摸与荣和符数
+			if (!state.isZimo && this.isMenQianQing()) { //门前清荣和10符
+				ret.fu += 10;
+				ret.fuList.push("门前清荣和10符{{" + this.helepai.pai_real_ascii + "}}");
+			}
+			if (state.isZimo) { //门前清自摸2符
+				ret.fu += 2;
+				ret.fuList.push("门前清自摸2符{{" + this.helepai.pai_real_ascii + "}}");
+			}
 		}
 		ret.fu_real = ret.fu;
 		ret.fu = Math.ceil(ret.fu / 10) * 10;
-		if(ret.fu == 20 && this.fulu.length > 0){
+		if (ret.fu == 20 && this.fulu.length > 0) {
 			ret.fuList.push("鸣牌平和牌型多计10符");
 			ret.fu = 30;
 			ret.fu_real = 30;
