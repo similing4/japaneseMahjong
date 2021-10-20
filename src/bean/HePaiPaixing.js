@@ -358,7 +358,7 @@ export default class HePaiPaixing {
 				ret.fu += 10;
 				ret.fuList.push("门前清荣和10符{{" + this.helepai.pai_real_ascii + "}}");
 			}
-			if (state.isZimo) { //门前清自摸2符
+			if (state.isZimo && this.isMenQianQing()) { //门前清自摸2符
 				ret.fu += 2;
 				ret.fuList.push("门前清自摸2符{{" + this.helepai.pai_real_ascii + "}}");
 			}

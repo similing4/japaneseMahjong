@@ -112,13 +112,14 @@ export default class Mianzi {
 				break;
 		}
 		var redDoraCount = this.redDoraCount;
-		for (var j = 0; j < list.length; j++)
-			if (list[j].getPaiAscii() == 5) {
-				list[j].isRed = true;
-				redDoraCount --;
-				if(redDoraCount == 0)
-					break;
-			}
+		if (redDoraCount > 0)
+			for (var j = 0; j < list.length; j++)
+				if (list[j].getPaiAscii() == 5) {
+					list[j].isRed = true;
+					redDoraCount--;
+					if (redDoraCount == 0)
+						break;
+				}
 		return list;
 	}
 }
