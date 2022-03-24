@@ -74,7 +74,7 @@ export default class YakuCalculator {
 		var doraLi = {};
 		var doraRed = {};
 		hePaiPaixing.getPaiList().map((pai) => {
-			var c = pai.getDoraCountNormal(state);
+			let c = pai.getDoraCountNormal(state);
 			if (c > 0){
 				if(!doraNormal[pai.pai_real_ascii + ''])
 					doraNormal[pai.pai_real_ascii + ''] = c;
@@ -95,6 +95,23 @@ export default class YakuCalculator {
 					doraRed[pai.pai_real_ascii + ''] ++;
 			}
 		})
+		for(let i=0;i<state.beidora;i++){
+			let pei = Pai.fromRealAscii(30);
+			let c = pei.getDoraCountNormal(state);
+			if (c > 0){
+				if(!doraNormal[pei.pai_real_ascii + ''])
+					doraNormal[pei.pai_real_ascii + ''] = c;
+				else
+					doraNormal[pei.pai_real_ascii + ''] += c;
+			}
+			c = pei.getDoraCountLi(state);
+			if (c > 0 && state.isLiZhi){
+				if(!doraLi[pei.pai_real_ascii + ''])
+					doraLi[pei.pai_real_ascii + ''] = c;
+				else
+					doraLi[pei.pai_real_ascii + ''] += c;
+			}
+		}
 		Object.keys(doraNormal).map((pai_real_ascii)=>{
 			ret.push({
 				count: doraNormal[pai_real_ascii],
