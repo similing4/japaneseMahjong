@@ -76,17 +76,20 @@ class GuoShiWuShuangParser {
 		});
 		var ret = {};
 		var res = [];
-		ret.xiangTingCount = guoshiNums.reduce((sum, pai_real_ascii, index) => { //国士无双的向听数直接数幺九的数量就行了，为0的就是一次向听计数，也是待牌
-			if (index == 1 && hand[0] == 0) {
-				sum++;
-				res.push(Pai.fromRealAscii(0));
-			}
+		var has2 = false;
+		ret.xiangTingCount = guoshiNums.map((pai_real_ascii, index) => { //国士无双的向听数直接数幺九的数量就行了，为0的就是一次向听计数，也是待牌
 			if (hand[pai_real_ascii] == 0) {
-				sum++;
 				res.push(Pai.fromRealAscii(pai_real_ascii));
+				return 1;
 			}
-			return sum;
-		});
+			if (hand[pai_real_ascii] >= 2)
+				has2 = true;
+			return 0;
+		}).reduce((a,b)=>{return a+b;});
+		if(has2)
+			ret.xiangTingCount --;
+		if(ret.xiangTingCount < 0)
+			ret.xiangTingCount = 0;
 		if (this.paiList.length == 13) {
 			ret.paiState = PaiState.Deal
 			ret.divideResult = res;
@@ -111,7 +114,7 @@ class GuoShiWuShuangParser {
 		if (this.paiList.length < 14)
 			return false;
 		var xiangting = this.calcXiangting();
-		return xiangting.xiangTingCount == 0 && xiangting.divideResult.length == 0;
+		return xiangting.xiangTingCount <= 0 && xiangting.divideResult.length == 0;
 	}
 }
 export default GuoShiWuShuangParser;

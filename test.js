@@ -7,8 +7,8 @@ var maj = new JapaneseMaj({
 	dora: [],
 	beidora: 0
 });
-var paixing = JapaneseMaj.getPaixingFromString("123456m12344s567p");
+var paixing = JapaneseMaj.getPaixingFromString("19m19s19p12345677z");
 var res = maj.getYakuCalculator(paixing);
 if(res)
 	console.log(res.calcYaku(maj.state));
-//console.log(maj.calcXiangting(paixing));
+console.log(maj.calcXiangting(paixing));
