@@ -8,8 +8,8 @@
  */
 import Yi from "../../../bean/Yi.js";
 export default class SanSeTongShun extends Yi {
-	constructor() {
-		super("SanSeTongShun","三色同顺",2,[]);
+	constructor(hePaiPaixing) {
+		super("SanSeTongShun","三色同顺",hePaiPaixing.isMenQianQing() ? 2 : 1,[]);
 	}
 	/*
 		判断和牌牌型是否有当前役
@@ -35,7 +35,7 @@ export default class SanSeTongShun extends Yi {
 		var val = Object.values(shunziBasePai);
 		for(var i in val)
 			if(val[i].length == 3)
-				return [new SanSeTongShun()];
+				return [new SanSeTongShun(hePaiPaixing)];
 		return [];
 	}
 };
