@@ -68,7 +68,16 @@ class Parser {
 		if (this.paixing.hand.length >= 13) {
 			ret.guoShiWuShuang = new GuoShiWuShuangParser(this.paixing.hand).calcXiangting();
 			ret.qiDuiZi = new QiDuiZiParser(this.paixing.hand).calcXiangting();
-			var best = [{ type: "GuoShiWuShuang", obj: ret.guoShiWuShuang }, { type: "QiDuiZi", obj: ret.qiDuiZi }, { type: "MianZiShou", obj: ret.mianZiShou }].sort((a, b) => {
+			var best = [{
+				type: "GuoShiWuShuang",
+				obj: ret.guoShiWuShuang
+			}, {
+				type: "QiDuiZi",
+				obj: ret.qiDuiZi
+			}, {
+				type: "MianZiShou",
+				obj: ret.mianZiShou
+			}].sort((a, b) => {
 				return a.obj.xiangTingCount - b.obj.xiangTingCount;
 			})[0];
 			ret.best = best.obj;
@@ -95,22 +104,11 @@ class Parser {
 		var mianZiShou = mianZiShouParser.calcMianzi();
 		var hePaiPaixingList = [];
 		if (mianZiShou) {
-			mianZiShou.map((item) => {
-				if(item.header.pai_real_ascii == this.paixing.hand[this.paixing.hand.length - 1].pai_real_ascii){
-					//和了牌是雀头的情况
-					hePaiPaixingList.push(new HePaiPaixing({
-						type: "MianZiShou",
-						helepai: this.paixing.hand[this.paixing.hand.length - 1],
-						paiList: this.paixing.hand,
-						header: item.header,
-						hand: item.mianzi,
-						fulu: this.paixing.fulu,
-						hepaiMianziIndex: -1
-					}));
-				}
-				item.mianzi.map((mianzi,mianziIndex)=>{
-					if(mianzi.getPaiList().map((pai)=>{return pai.pai_real_ascii}).includes(this.paixing.hand[this.paixing.hand.length - 1].pai_real_ascii))
-						//和了牌是面子的情况
+			try {
+				mianZiShou.map((item) => {
+					if (item.header.pai_real_ascii == this.paixing.hand[this.paixing.hand.length - 1]
+						.pai_real_ascii) {
+						//和了牌是雀头的情况
 						hePaiPaixingList.push(new HePaiPaixing({
 							type: "MianZiShou",
 							helepai: this.paixing.hand[this.paixing.hand.length - 1],
@@ -118,32 +116,53 @@ class Parser {
 							header: item.header,
 							hand: item.mianzi,
 							fulu: this.paixing.fulu,
-							hepaiMianziIndex: mianziIndex
+							hepaiMianziIndex: -1
 						}));
-				})
-			});
+					}
+					item.mianzi.map((mianzi, mianziIndex) => {
+						if (mianzi.getPaiList().map((pai) => {
+								return pai.pai_real_ascii
+							}).includes(this.paixing.hand[this.paixing.hand.length - 1]
+								.pai_real_ascii))
+							//和了牌是面子的情况
+							hePaiPaixingList.push(new HePaiPaixing({
+								type: "MianZiShou",
+								helepai: this.paixing.hand[this.paixing.hand.length - 1],
+								paiList: this.paixing.hand,
+								header: item.header,
+								hand: item.mianzi,
+								fulu: this.paixing.fulu,
+								hepaiMianziIndex: mianziIndex
+							}));
+					})
+				});
+			} catch (e) {}
 		}
 		if (this.paixing.fulu.length > 0) {
 			if (hePaiPaixingList.length == 0)
 				return false;
-			return new YakuCalculator(hePaiPaixingList,state);
+			return new YakuCalculator(hePaiPaixingList, state);
 		}
 		if (qiDuiZiParser.isHepai())
-			hePaiPaixingList.push(new HePaiPaixing({
-				type: "QiDuiZi",
-				helepai: this.paixing.hand[this.paixing.hand.length - 1],
-				paiList: this.paixing.hand,
-				duiziList: qiDuiZiParser.getDuiZiList()
-			}));
+			try {
+				hePaiPaixingList.push(new HePaiPaixing({
+					type: "QiDuiZi",
+					helepai: this.paixing.hand[this.paixing.hand.length - 1],
+					paiList: this.paixing.hand,
+					duiziList: qiDuiZiParser.getDuiZiList()
+				}));
+			} catch (e) {}
 		if (guoShiWuShuangParser.isHepai())
-			hePaiPaixingList.push(new HePaiPaixing({
-				type: "GuoShiWuShuang",
-				helepai: this.paixing.hand[this.paixing.hand.length - 1],
-				paiList: this.paixing.hand
-			}));
+			try {
+				hePaiPaixingList.push(new HePaiPaixing({
+					type: "GuoShiWuShuang",
+					helepai: this.paixing.hand[this.paixing.hand.length - 1],
+					paiList: this.paixing.hand
+				}));
+			} catch (e) {}
 		if (hePaiPaixingList.length == 0)
 			return false;
-		return new YakuCalculator(hePaiPaixingList,state);
+		return new YakuCalculator(hePaiPaixingList, state);
 	}
 }
 export default Parser;
