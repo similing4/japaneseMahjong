@@ -9,7 +9,7 @@
 import Yi from "../../../bean/Yi.js";
 export default class ShuangLiZhi extends Yi {
 	constructor() {
-		super("ShuangLiZhi","双立直",1,[]);
+		super("ShuangLiZhi","两立直",2,[]);
 	}
 	/*
 		判断和牌牌型是否有当前役

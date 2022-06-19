@@ -20,7 +20,7 @@ export default class LiZhi extends Yi {
 		有当前役返回该牌型具有的役的对象数组，否则返回空数组
 	*/
 	static getCurrentYi(hePaiPaixing,state){
-		if(state.isLiZhi)
+		if(state.isLiZhi && !state.isLiangLiZhi)
 			return [new LiZhi()];
 		return [];
 	}
