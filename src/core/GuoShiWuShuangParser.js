@@ -53,54 +53,32 @@ class GuoShiWuShuangParser {
 	calcXiangting() {
 		if (this.paiList.length < 13)
 			throw "国士无双在鸣牌后不能计算向听数与牌效";
-		var hand = [
-			0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0
-		];
-		var rest = [
-			4, 4, 4, 4, 4, 4, 4, 4, 4,
-			4, 4, 4, 4, 4, 4, 4, 4, 4,
-			4, 4, 4, 4, 4, 4, 4, 4, 4,
-			4, 4, 4, 4, 4, 4, 4
-		];
-		var wuxiaopai = []; //无效牌
-		this.paiList.map((pai) => {
-			hand[pai.pai_real_ascii]++;
-			rest[pai.pai_real_ascii]--;
-			if (rest[pai.pai_real_ascii] < 0)
-				throw "输入的牌数不正确";
-			if (!guoshiNums.includes(pai.pai_real_ascii))
-				wuxiaopai.push(pai);
+		let paiAsciiList = this.paiList.map((pai) => {
+			return pai.pai_real_ascii;
 		});
-		var ret = {};
-		var res = [];
-		var has2 = false;
-		ret.xiangTingCount = guoshiNums.map((pai_real_ascii, index) => { //国士无双的向听数直接数幺九的数量就行了，为0的就是一次向听计数，也是待牌
-			if (hand[pai_real_ascii] == 0) {
-				res.push(Pai.fromRealAscii(pai_real_ascii));
-				return 1;
+		let check = guoshiNums.map((t) => {
+			return {
+				pai: Pai.fromRealAscii(t),
+				has: paiAsciiList.includes(t)
 			}
-			if (hand[pai_real_ascii] >= 2)
-				has2 = true;
-			return 0;
-		}).reduce((a,b)=>{return a+b;});
-		if(has2)
-			ret.xiangTingCount --;
-		if(ret.xiangTingCount < 0)
+		});
+		let ret = {};
+		ret.xiangTingCount = check.filter((t) => !t.has).length - 1;
+		if (ret.xiangTingCount < 0)
 			ret.xiangTingCount = 0;
 		if (this.paiList.length == 13) {
 			ret.paiState = PaiState.Deal
-			ret.divideResult = res;
+			ret.divideResult = check.filter((t) => !t.has).map((t) => t.pai);
+			if (ret.divideResult.length == 0)
+				ret.divideResult = check.map((t) => t.pai);
 		} else {
+			let wuxiaopai = paiAsciiList.filter((t) => !guoshiNums.includes(t));
+			let multi = guoshiNums.filter((t) => paiAsciiList.filter((s) => s == t).length > 1);
+			if (multi.length > 1)
+				wuxiaopai = wuxiaopai.concat(multi);
 			ret.paiState = PaiState.Discard;
 			ret.divideResult = wuxiaopai;
 		}
-		if (ret.paiState == PaiState.Deal && ret.xiangTingCount == 0) //十三面听牌
-			ret.divideResult = guoshiNums.map((i) => {
-				return Pai.fromRealAscii(i);
-			});
 		return ret;
 	}
 	/*
