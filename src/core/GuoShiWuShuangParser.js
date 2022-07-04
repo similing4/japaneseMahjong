@@ -77,7 +77,7 @@ class GuoShiWuShuangParser {
 			if (multi.length > 1)
 				wuxiaopai = wuxiaopai.concat(multi);
 			ret.paiState = PaiState.Discard;
-			ret.divideResult = wuxiaopai;
+			ret.divideResult = wuxiaopai.map((t) => Pai.fromRealAscii(t));
 		}
 		return ret;
 	}
