@@ -225,7 +225,7 @@ export default class YakuCalculator {
 		return test.sort((a, b) => {
 			if(b.point == a.point){
 				if(b.fan == a.fan)
-					return b.fu - a.fu;
+					return b.fu.fu_real - a.fu.fu_real;
 				return b.fan - a.fan;
 			}
 			return b.point - a.point;
