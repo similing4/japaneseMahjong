@@ -113,7 +113,7 @@ export default class Pai {
 	serialize() {
 		var v = this.pai_real_ascii;
 		var c = this.getPaiAscii();
-		if(c == 5 && this.isRed)
+		if (c == 5 && this.isRed)
 			c = 0;
 		if (v < 9)
 			return c + "m";
@@ -257,6 +257,46 @@ export default class Pai {
 		var ret = 0;
 		globalState.lidora.map((pai) => {
 			if (pai.pai_real_ascii == this.pai_real_ascii)
+				ret++;
+		});
+		return ret;
+	}
+	/*
+		获取该牌三麻下的宝牌价值（只计普通宝牌）
+		参数：
+		globalState：State对象
+		返回值：
+		如果不是普通宝牌则返回0，否则返回单个本牌计入的普通宝牌个数。
+	*/
+	getDoraCountNormal3(globalState) {
+		var ret = 0;
+		globalState.dora.map((pai) => {
+			//pai为宝牌，因此pai为二万时宝牌指示牌为一万
+			if (pai.pai_real_ascii == 1) {
+				//在三麻中一万作为宝牌指示牌时宝牌为九万
+				if (8 == this.pai_real_ascii)
+					ret++;
+			} else if (pai.pai_real_ascii == this.pai_real_ascii)
+				ret++;
+		});
+		return ret;
+	}
+	/*
+		获取该牌三麻下的宝牌价值（只计里宝牌）
+		参数：
+		globalState：State对象
+		返回值：
+		如果不是里宝牌则返回0，否则返回单个本牌计入的里宝牌个数。
+	*/
+	getDoraCountLi3(globalState) {
+		var ret = 0;
+		globalState.lidora.map((pai) => {
+			//pai为宝牌，因此pai为二万时宝牌指示牌为一万
+			if (pai.pai_real_ascii == 1) {
+				//在三麻中一万作为宝牌指示牌时宝牌为九万
+				if (8 == this.pai_real_ascii)
+					ret++;
+			} else if (pai.pai_real_ascii == this.pai_real_ascii)
 				ret++;
 		});
 		return ret;
