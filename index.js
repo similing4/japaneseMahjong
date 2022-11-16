@@ -1,1 +1,1 @@
-module.exports = require('./lib/JapaneseMaj.js')
+module.exports = require('./dist/japanesemaj.min.js')

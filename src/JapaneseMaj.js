@@ -167,4 +167,4 @@ class JapaneseMaj {
 		return State.deserialize(str);
 	}
 }
-export default JapaneseMaj;
+module.exports = JapaneseMaj;
