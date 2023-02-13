@@ -37,6 +37,10 @@ class JapaneseMaj {
 		isQiangGang = false; //是否是抢杠
 		isTianHe = false; //是否是天和
 		isDiHe = false; //是否是地和
+		isRenHe = false; //是否是人和
+		isYanFan = false; //是否是燕返
+		isGangZhen = false; //是否是杠振
+		isGuYi = false; //是否是古役
 	}
 	 */
 	constructor(userConfig) {
@@ -54,7 +58,11 @@ class JapaneseMaj {
 			isLast: false,
 			isQiangGang: false,
 			isTianHe: false,
-			isDiHe: false
+			isDiHe: false,
+			isRenHe: false,
+			isYanFan: false,
+			isGangZhen: false,
+			isGuYi: false
 		};
 		Object.assign(config, userConfig);
 		this.state = new State();
@@ -72,6 +80,10 @@ class JapaneseMaj {
 		this.state.isQiangGang = config.isQiangGang; //是否是抢杠
 		this.state.isTianHe = config.isTianHe; //是否是天和
 		this.state.isDiHe = config.isDiHe; //是否是地和
+		this.state.isRenHe = config.isRenHe; //是否是人和
+		this.state.isYanFan = config.isYanFan; //是否是燕返
+		this.state.isGangZhen = config.isGangZhen; //是否是杠振
+		this.state.isGuYi = config.isGuYi; //是否是古役
 	}
 	/*
 	 *	根据牌编号获取Pai对象

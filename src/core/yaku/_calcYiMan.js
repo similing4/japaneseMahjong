@@ -43,6 +43,12 @@ import TianHe from "./yi_man/TianHe.js"; //天和
 import XiaoSiXi from "./yi_man/XiaoSiXi.js"; //小四喜
 import ZiYiSe from "./yi_man/ZiYiSe.js"; //字一色
 
+import DaCheLun from "../yaku_old/yiman/DaCheLun.js"; //大车轮
+import DaShuLin from "../yaku_old/yiman/DaShuLin.js"; //大数邻
+import DaZhuLin from "../yaku_old/yiman/DaZhuLin.js"; //大竹林
+import RenHe from "../yaku_old/yiman/RenHe.js"; //人和
+import ShiShangSanNian from "../yaku_old/yiman/ShiShangSanNian.js"; //石上三年
+
 export default (hePaiPaixing, state) => {
 	if (!(state instanceof State))
 		throw "参数state应为State类型：" + state;
@@ -55,8 +61,16 @@ export default (hePaiPaixing, state) => {
 		SiAnKe, SiGangZi, TianHe, XiaoSiXi,
 		ZiYiSe
 	];
+	var guyi = [
+		DaCheLun, DaShuLin, DaZhuLin,
+		RenHe, ShiShangSanNian
+	];
 	imp.map((obj) => {
 		ret = ret.concat(obj.getCurrentYi(hePaiPaixing, state));
 	})
+	if (state.isGuYi)
+		guyi.map((obj) => {
+			ret = ret.concat(obj.getCurrentYi(hePaiPaixing, state));
+		})
 	return ret;
 };

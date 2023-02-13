@@ -14,6 +14,10 @@ class State {
 	isQiangGang = false; //是否是抢杠
 	isTianHe = false; //是否是天和
 	isDiHe = false; //是否是地和
+	isRenHe = false; //是否是人和
+	isYanFan = false; //是否是燕返
+	isGangZhen = false; //是否是杠振
+	isGuYi = false;
 	/*
 		序列化对象
 		参数：无
@@ -35,6 +39,10 @@ class State {
 		json.isQiangGang = this.isQiangGang;
 		json.isTianHe = this.isTianHe;
 		json.isDiHe = this.isDiHe;
+		json.isRenHe = this.isRenHe;
+		json.isYanFan = this.isYanFan;
+		json.isGangZhen = this.isGangZhen;
+		json.isGuYi = this.isGuYi;
 		return json;
 	}
 	/*
@@ -59,6 +67,10 @@ class State {
 		state.isQiangGang = obj.isQiangGang;
 		state.isTianHe = obj.isTianHe;
 		state.isDiHe = obj.isDiHe;
+		state.isRenHe = obj.isRenHe;
+		state.isYanFan = obj.isYanFan;
+		state.isGangZhen = obj.isGangZhen;
+		state.isGuYi = obj.isGuYi;
 		return state;
 	}
 }

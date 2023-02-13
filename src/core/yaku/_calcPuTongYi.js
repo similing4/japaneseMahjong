@@ -59,6 +59,15 @@ import YiFa from "./pu_tong_yi/YiFa.js"; //一发
 import YiPai from "./pu_tong_yi/YiPai.js"; //役牌
 import YiQiTongGuan from "./pu_tong_yi/YiQiTongGuan.js"; //一气通贯
 
+import GangZhen from "../yaku_old/pu_tong_yi/GangZhen.js"; //杠振
+import JiuTongLaoYu from "../yaku_old/pu_tong_yi/JiuTongLaoYu.js"; //九筒捞鱼
+import SanLianKe from "../yaku_old/pu_tong_yi/SanLianKe.js"; //三连刻
+import ShiErLuoTai from "../yaku_old/pu_tong_yi/ShiErLuoTai.js"; //十二落抬
+import WuMenQi from "../yaku_old/pu_tong_yi/WuMenQi.js"; //五门齐
+import YanFan from "../yaku_old/pu_tong_yi/YanFan.js"; //燕返
+import YiSeSanTongShun from "../yaku_old/pu_tong_yi/YiSeSanTongShun.js"; //一色三同顺
+import YiTongMoYue from "../yaku_old/pu_tong_yi/YiTongMoYue.js"; //一筒摸月
+
 export default (hePaiPaixing, state) => {
 	if (!(state instanceof State))
 		throw "参数state应为State类型：" + state;
@@ -76,8 +85,17 @@ export default (hePaiPaixing, state) => {
 		XiaoSanYuan, YiBeiKou, YiFa,
 		YiPai, YiQiTongGuan
 	];
+	var guyi = [
+		GangZhen, JiuTongLaoYu, SanLianKe,
+		ShiErLuoTai, WuMenQi, YanFan,
+		YiSeSanTongShun, YiTongMoYue
+	];
 	imp.map((obj) => {
 		ret = ret.concat(obj.getCurrentYi(hePaiPaixing, state));
 	})
+	if (state.isGuYi)
+		guyi.map((obj) => {
+			ret = ret.concat(obj.getCurrentYi(hePaiPaixing, state));
+		})
 	return ret;
 };

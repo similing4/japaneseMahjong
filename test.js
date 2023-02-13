@@ -1,15 +1,20 @@
 //测试用例
-import JapaneseMaj from "./src/JapaneseMaj.js";
+const JapaneseMaj = require("./dist/japanesemaj.min.js");
 var maj = new JapaneseMaj({
 	changFeng: 2, // Number类型，东风场为1，南风场为2，西风场为3，北风场为4
 	ziFeng: 2, // Number类型，自风，东1南2西3北4
-	isZimo: true,
+	isZimo: false,
 	isLiangLiZhi: false,
 	isLiZhi: false,
 	dora: [JapaneseMaj.getPai("Wanzi", 2)],
-	beidora: 0
+	beidora: 0,
+	isLast: false,
+	isRenHe: false,
+	isYanFan: false,
+	isGangZhen: false,
+	isGuYi: true
 });
-var paixing = JapaneseMaj.getPaixingFromString("56789m555z55p7m 123s");
+var paixing = JapaneseMaj.getPaixingFromString("22334455667788s");
 var res = maj.getYakuCalculator(paixing);
 if(res)
 	console.log(res.calcYaku3(maj.state));

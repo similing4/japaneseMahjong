@@ -1,10 +1,10 @@
 {
   "name": "shengxinyumaj",
-  "version": "1.1.18",
+  "version": "1.1.19",
   "description": "用于nodejs环境下的日本麻将点数、番数、符数、役种等计算",
   "main": "index.js",
   "scripts": {
-    "test": "babel-node test.js",
+    "test": "webpack-cli&node test.js",
     "dist": "webpack-cli",
     "prepublish": "npm run dist"
   },
@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/similing4/japaneseMajhong#readme",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
