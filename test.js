@@ -14,7 +14,7 @@ var maj = new JapaneseMaj({
 	isGangZhen: false,
 	isGuYi: true
 });
-var paixing = JapaneseMaj.getPaixingFromString("22334455667788s");
+var paixing = JapaneseMaj.getPaixingFromString("11122233345677s");
 var res = maj.getYakuCalculator(paixing);
 if(res)
 	console.log(res.calcYaku3(maj.state));
