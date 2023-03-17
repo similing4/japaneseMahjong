@@ -46,6 +46,7 @@ import ZiYiSe from "./yi_man/ZiYiSe.js"; //字一色
 import DaCheLun from "../yaku_old/yiman/DaCheLun.js"; //大车轮
 import DaShuLin from "../yaku_old/yiman/DaShuLin.js"; //大数邻
 import DaZhuLin from "../yaku_old/yiman/DaZhuLin.js"; //大竹林
+import DaQiXing from "../yaku_old/yiman/DaQiXing.js"; //大竹林
 import RenHe from "../yaku_old/yiman/RenHe.js"; //人和
 import ShiShangSanNian from "../yaku_old/yiman/ShiShangSanNian.js"; //石上三年
 
@@ -63,7 +64,7 @@ export default (hePaiPaixing, state) => {
 	];
 	var guyi = [
 		DaCheLun, DaShuLin, DaZhuLin,
-		RenHe, ShiShangSanNian
+		RenHe, ShiShangSanNian, DaQiXing
 	];
 	imp.map((obj) => {
 		ret = ret.concat(obj.getCurrentYi(hePaiPaixing, state));
