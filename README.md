@@ -8,7 +8,7 @@
 
 一个轻量级的，用于日麻的番数、符数、点数、向听数计算与何切判断的js库。
 
-## 安装
+## 安装（Vue-CLI项目）
 
 ```
 npm i shengxinyumaj
@@ -28,6 +28,11 @@ import JapaneseMaj from "shengxinyumaj";
 
 ```
 const JapaneseMaj = require("shengxinyumaj").default;
+```
+
+浏览器直接引入（打包的文件在Release中），引入后可以直接使用JapaneseMaj对象：
+```
+<script src="/japanesemaj.min.js"></script>
 ```
 
 ### 配置相关
