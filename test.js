@@ -14,8 +14,8 @@ var maj = new JapaneseMaj({
 	isGangZhen: false,
 	isGuYi: true
 });
-var paixing = JapaneseMaj.getPaixingFromString("11223344556677z");
+var paixing = JapaneseMaj.getPaixingFromString("11999p19s1234567z");
 var res = maj.getYakuCalculator(paixing);
 if(res)
 	console.log(res.calcYaku3(maj.state));
-console.log(maj.calcXiangting(paixing));
+console.log(maj.calcXiangting(paixing).best.divideResult);

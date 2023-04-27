@@ -53,32 +53,29 @@ class GuoShiWuShuangParser {
 	calcXiangting() {
 		if (this.paiList.length < 13)
 			throw "国士无双在鸣牌后不能计算向听数与牌效";
-		let paiAsciiList = this.paiList.map((pai) => {
-			return pai.pai_real_ascii;
-		});
-		let check = guoshiNums.map((t) => {
-			return {
-				pai: Pai.fromRealAscii(t),
-				has: paiAsciiList.includes(t)
-			}
-		});
+		let guoshiCounts = guoshiNums.map((t) => 0);
+		for (let i = 0; i < this.paiList.length; i++)
+			if (guoshiNums.includes(this.paiList[i].pai_real_ascii))
+				guoshiCounts[guoshiNums.indexOf(this.paiList[i].pai_real_ascii)]++;
+		let noCount = guoshiCounts.filter((c) => c == 0).length;
+		let hasHead = guoshiCounts.filter((c) => c > 1).length > 0;
 		let ret = {};
-		ret.xiangTingCount = check.filter((t) => !t.has).length - 1;
-		if (ret.xiangTingCount < 0)
-			ret.xiangTingCount = 0;
 		if (this.paiList.length == 13) {
-			ret.paiState = PaiState.Deal
-			ret.divideResult = check.filter((t) => !t.has).map((t) => t.pai);
-			if (ret.divideResult.length == 0)
-				ret.divideResult = check.map((t) => t.pai);
+			ret.paiState = PaiState.Deal;
+			if (!hasHead)
+				ret.divideResult = guoshiNums.map((t) => Pai.fromRealAscii(t));
+			else
+				ret.divideResult = guoshiNums.filter((t) => !this.paiList.map(t2 => t2.pai_real_ascii).includes(t)).map((t3) => Pai.fromRealAscii(t3));
 		} else {
-			let wuxiaopai = paiAsciiList.filter((t) => !guoshiNums.includes(t));
-			let multi = guoshiNums.filter((t) => paiAsciiList.filter((s) => s == t).length > 1);
-			if (multi.length > 1)
-				wuxiaopai = wuxiaopai.concat(multi);
 			ret.paiState = PaiState.Discard;
-			ret.divideResult = wuxiaopai.map((t) => Pai.fromRealAscii(t));
+			ret.divideResult = Array.from(new Set(this.paiList.map(t => t.pai_real_ascii))).filter(t => !guoshiNums.includes(t)).map((t3) => Pai.fromRealAscii(t3)); //非幺九是推荐弃牌
+			if (guoshiCounts.filter((c) => c > 1).length > 1 || guoshiCounts.filter((c) => c > 2).length > 0)
+				ret.divideResult = ret.divideResult.concat(guoshiNums.filter((item, ind) => guoshiCounts[ind] > 1 && !ret.divideResult.map(t3 => t3.pai_real_ascii).includes(item)).map(t => Pai.fromRealAscii(t))); //超过1张的幺九牌也是推荐弃牌
 		}
+		if (hasHead) //有雀头
+			ret.xiangTingCount = noCount - 1;
+		else //无雀头
+			ret.xiangTingCount = noCount;
 		return ret;
 	}
 	/*
@@ -91,8 +88,8 @@ class GuoShiWuShuangParser {
 	isHepai() {
 		if (this.paiList.length < 14)
 			return false;
-		var xiangting = this.calcXiangting();
-		return xiangting.xiangTingCount <= 0 && xiangting.divideResult.length == 0;
+		let xiangting = this.calcXiangting();
+		return xiangting.xiangTingCount < 0;
 	}
 }
 export default GuoShiWuShuangParser;
