@@ -18,6 +18,7 @@ class State {
 	isYanFan = false; //是否是燕返
 	isGangZhen = false; //是否是杠振
 	isGuYi = false;
+	isLianFeng2Fu = false; //连风牌雀头是否2符
 	/*
 		序列化对象
 		参数：无
@@ -43,6 +44,7 @@ class State {
 		json.isYanFan = this.isYanFan;
 		json.isGangZhen = this.isGangZhen;
 		json.isGuYi = this.isGuYi;
+		json.isLianFeng2Fu = this.isLianFeng2Fu;
 		return json;
 	}
 	/*
@@ -71,6 +73,7 @@ class State {
 		state.isYanFan = obj.isYanFan;
 		state.isGangZhen = obj.isGangZhen;
 		state.isGuYi = obj.isGuYi;
+		state.isLianFeng2Fu = obj.isLianFeng2Fu;
 		return state;
 	}
 }

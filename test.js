@@ -12,9 +12,10 @@ var maj = new JapaneseMaj({
 	isRenHe: false,
 	isYanFan: false,
 	isGangZhen: false,
-	isGuYi: true
+	isGuYi: true,
+	isLianFeng2Fu: true
 });
-var paixing = JapaneseMaj.getPaixingFromString("11999p19s1234567z");
+var paixing = JapaneseMaj.getPaixingFromString("123456789s123p22z");
 var res = maj.getYakuCalculator(paixing);
 if(res)
 	console.log(res.calcYaku3(maj.state));

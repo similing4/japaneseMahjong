@@ -41,6 +41,7 @@ class JapaneseMaj {
 		isYanFan = false; //是否是燕返
 		isGangZhen = false; //是否是杠振
 		isGuYi = false; //是否是古役
+		isLianFeng2Fu = false; //连风牌雀头是否2符
 	}
 	 */
 	constructor(userConfig) {
@@ -62,7 +63,8 @@ class JapaneseMaj {
 			isRenHe: false,
 			isYanFan: false,
 			isGangZhen: false,
-			isGuYi: false
+			isGuYi: false,
+			isLianFeng2Fu: false
 		};
 		Object.assign(config, userConfig);
 		this.state = new State();
@@ -84,6 +86,7 @@ class JapaneseMaj {
 		this.state.isYanFan = config.isYanFan; //是否是燕返
 		this.state.isGangZhen = config.isGangZhen; //是否是杠振
 		this.state.isGuYi = config.isGuYi; //是否是古役
+		this.state.isLianFeng2Fu = config.isLianFeng2Fu; //连风牌是否2符
 	}
 	/*
 	 *	根据牌编号获取Pai对象

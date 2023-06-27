@@ -330,6 +330,9 @@ export default class HePaiPaixing {
 			if (!this.header.isLianFengPai(state)) {
 				ret.fuList.push("雀头役牌2符{{" + this.header.pai_real_ascii + "}}");
 				ret.fu += 2;
+			} else if(this.header.isLianFengPai(state) && state.isLianFeng2Fu){
+				ret.fuList.push("雀头连风牌2符{{" + this.header.pai_real_ascii + "}}");
+				ret.fu += 2;
 			} else {
 				ret.fuList.push("雀头连风牌4符{{" + this.header.pai_real_ascii + "}}");
 				ret.fu += 4;
