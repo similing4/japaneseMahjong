@@ -43,6 +43,7 @@ const JapaneseMaj = require("shengxinyumaj").default;
 	ziFeng = 1; // Number类型，自风，东1南2西3北4
 	dora = []; //Array[Pai]类型，宝牌数组，注意这里是宝牌数组不是宝牌指示牌数组
 	lidora = []; //Array[Pai]类型，里宝牌数组，注意这里是里宝牌数组不是里宝牌指示牌数组
+	beidora = 0; //Number类型，拔北宝牌数
 	isLiangLiZhi = false; //是否两立直
 	isLiZhi = false; //是否立直
 	isYiFa = false; //是否一发
@@ -52,6 +53,11 @@ const JapaneseMaj = require("shengxinyumaj").default;
 	isQiangGang = false; //是否是抢杠
 	isTianHe = false; //是否是天和
 	isDiHe = false; //是否是地和
+	isRenHe = false; //是否是人和（包含古役为真时有效）
+	isYanFan = false; //是否是燕返（包含古役为真时有效）
+	isGangZhen = false; //是否是杠振（包含古役为真时有效）
+	isGuYi = false; //是否包含古役
+	isLianFeng2Fu = false; //连风牌雀头是否2符（默认4符）
 }
 ```
 
